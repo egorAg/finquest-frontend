@@ -239,6 +239,8 @@ export function Onboarding() {
   const navigate = useNavigate()
   const { setUser } = useAppStore()
   const [step, setStep] = useState(0)
+  const [dir, setDir] = useState<'next' | 'back'>('next')
+  const [animKey, setAnimKey] = useState(0)
   const slide = SLIDES[step]
 
   const finish = () => {
@@ -246,8 +248,17 @@ export function Onboarding() {
     navigate('/', { replace: true })
   }
 
-  const next = () => step < 2 ? setStep(step + 1) : finish()
-  const back = () => setStep(step - 1)
+  const next = () => {
+    if (step >= 2) { finish(); return }
+    setDir('next')
+    setAnimKey(k => k + 1)
+    setStep(step + 1)
+  }
+  const back = () => {
+    setDir('back')
+    setAnimKey(k => k + 1)
+    setStep(step - 1)
+  }
 
   const Illus = ILLUS[step]
 
@@ -258,11 +269,21 @@ export function Onboarding() {
           0%, 100% { transform: translateY(0) rotate(0deg); }
           50% { transform: translateY(-8px) rotate(3deg); }
         }
+        @keyframes slideInRight {
+          from { opacity: 0; transform: translateX(60px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideInLeft {
+          from { opacity: 0; transform: translateX(-60px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+        .ob-slide-next { animation: slideInRight .38s cubic-bezier(.25,.46,.45,.94) both; }
+        .ob-slide-back { animation: slideInLeft  .38s cubic-bezier(.25,.46,.45,.94) both; }
       `}</style>
 
       {/* Background glows */}
-      <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse 380px 300px at 50% -60px, ${slide.glow1} 0%, transparent 65%)`, transition: 'background .4s' }} />
-      <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse 240px 200px at 90% 75%, ${slide.glow2} 0%, transparent 60%)`, transition: 'background .4s' }} />
+      <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse 380px 300px at 50% -60px, ${slide.glow1} 0%, transparent 65%)`, transition: 'background .5s ease' }} />
+      <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse 240px 200px at 90% 75%, ${slide.glow2} 0%, transparent 60%)`, transition: 'background .5s ease' }} />
       <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(255,255,255,.04) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
 
       {/* Top bar */}
@@ -282,13 +303,20 @@ export function Onboarding() {
         </button>
       </div>
 
+      {/* Slide content — animated */}
+      <div
+        key={animKey}
+        className={dir === 'next' ? 'ob-slide-next' : 'ob-slide-back'}
+        style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 5, overflow: 'hidden' }}
+      >
+
       {/* Illustration */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 5 }}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Illus />
       </div>
 
       {/* Text */}
-      <div style={{ position: 'relative', zIndex: 5, textAlign: 'center', padding: '0 28px 20px' }}>
+      <div style={{ textAlign: 'center', padding: '0 28px 20px' }}>
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
           borderRadius: 100, padding: '5px 14px', marginBottom: 12,
@@ -308,6 +336,8 @@ export function Onboarding() {
           {slide.desc}
         </div>
       </div>
+
+      </div>{/* end animated slide */}
 
       {/* Buttons */}
       <div style={{ position: 'relative', zIndex: 5, display: 'flex', gap: 12, padding: '0 24px 44px' }}>
