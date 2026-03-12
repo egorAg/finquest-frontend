@@ -1,42 +1,12 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMutation } from '@tanstack/react-query'
 import { useAppStore } from '../store'
-import { updateMe } from '../api'
 import { Card } from '../components/ui/Card'
 import { XpBar } from '../components/ui/XpBar'
 import { PageHeader } from '../components/layout/PageHeader'
 
-const AVATAR_EMOJIS = [
-  '😀','😎','🤓','🧐','😏','🥸','🤩','😇','🥳','😈',
-  '🐱','🐶','🐸','🦊','🐼','🦁','🐯','🐨','🐮','🐷',
-  '🦄','🐙','🦋','🐬','🦅','🦉','🐲','🦝','🐺','🐧',
-  '🧙','🧑‍💻','👨‍🚀','🧑‍🎨','🥷','👑','🎩','🤖','👾','💀',
-]
-
 export function Profile() {
   const navigate = useNavigate()
-  const { user, setUser } = useAppStore()
-  const [showPicker, setShowPicker] = useState(false)
-
-  const openPicker = () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(window as any).Telegram?.WebApp?.disableVerticalSwipes?.()
-    setShowPicker(true)
-  }
-  const closePicker = () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(window as any).Telegram?.WebApp?.enableVerticalSwipes?.()
-    setShowPicker(false)
-  }
-
-  const { mutate: saveAvatar, isPending } = useMutation({
-    mutationFn: (emoji: string) => updateMe({ avatarEmoji: emoji }),
-    onSuccess: (updated) => {
-      setUser(updated)
-      closePicker()
-    },
-  })
+  const { user } = useAppStore()
 
   if (!user) return null
 
@@ -49,7 +19,7 @@ export function Profile() {
         <Card className="text-center py-6">
           <button
             type="button"
-            onClick={openPicker}
+            onClick={() => navigate('/profile/avatar')}
             className="relative inline-block mb-2 active:opacity-70"
           >
             <span className="text-5xl">{user.avatarEmoji ?? '👤'}</span>
@@ -82,50 +52,6 @@ export function Profile() {
 
         <div className="h-4" />
       </div>
-
-      {/* Avatar picker bottom sheet */}
-      {showPicker && (
-        <div className="fixed inset-0 z-50 flex flex-col justify-end">
-          <div className="absolute inset-0 bg-black/60" onClick={closePicker} />
-          <div
-            className="relative rounded-t-3xl p-5"
-            style={{ background: '#161B27' }}
-            onTouchMove={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <span className="font-bold text-sm">Выбери аватарку</span>
-              <button
-                type="button"
-                onClick={closePicker}
-                className="text-muted text-xl leading-none"
-              >
-                ✕
-              </button>
-            </div>
-            <div
-            className="grid grid-cols-8 gap-2"
-            style={{ maxHeight: '45vh', overflowY: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}
-          >
-              {AVATAR_EMOJIS.map((emoji) => (
-                <button
-                  key={emoji}
-                  type="button"
-                  disabled={isPending}
-                  onClick={() => saveAvatar(emoji)}
-                  className="flex items-center justify-center rounded-xl active:opacity-60"
-                  style={{
-                    height: 44, fontSize: 24,
-                    background: emoji === user.avatarEmoji ? 'rgba(74,222,128,.2)' : 'rgba(255,255,255,.05)',
-                    border: emoji === user.avatarEmoji ? '1.5px solid #4ADE80' : '1.5px solid transparent',
-                  }}
-                >
-                  {emoji}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

@@ -20,6 +20,7 @@ import { Challenges } from './pages/Challenges'
 import { LevelProgress } from './pages/LevelProgress'
 import { CreateGoal } from './pages/CreateGoal'
 import { ContributeGoal } from './pages/ContributeGoal'
+import { ChooseAvatar } from './pages/ChooseAvatar'
 
 const qc = new QueryClient({
   defaultOptions: {
@@ -79,6 +80,7 @@ function AppRoutes() {
       <Route path="level-progress" element={<LevelProgress />} />
       <Route path="goals/create" element={<CreateGoal />} />
       <Route path="goals/:id/contribute" element={<ContributeGoal />} />
+      <Route path="profile/avatar" element={<ChooseAvatar />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
