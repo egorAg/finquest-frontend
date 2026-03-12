@@ -237,13 +237,14 @@ const ILLUS = [IllusFinance, IllusGame, IllusShared]
 
 export function Onboarding() {
   const navigate = useNavigate()
-  const { setUser } = useAppStore()
+  const { user, setUser } = useAppStore()
   const [step, setStep] = useState(0)
   const [dir, setDir] = useState<'next' | 'back'>('next')
   const [animKey, setAnimKey] = useState(0)
   const slide = SLIDES[step]
 
   const finish = () => {
+    if (user) setUser({ ...user, onboardingDone: true })
     updateMe({ onboardingDone: true }).then(setUser).catch(() => {})
     navigate('/', { replace: true })
   }
