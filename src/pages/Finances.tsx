@@ -4,10 +4,12 @@ import { useAppStore } from '../store'
 import { getAnalyticsSummary } from '../api'
 import { Card } from '../components/ui/Card'
 import { PageHeader } from '../components/layout/PageHeader'
-import { currentMonth, cn } from '../lib/utils'
+import { currentMonth, cn, pluralize } from '../lib/utils'
 import { useFmt } from '../hooks/useFmt'
 
 type DayData = { date: string; income: number; expense: number }
+
+const BAR_COLORS = ['#F97316', '#38BDF8', '#A78BFA', '#4ADE80', '#FACC15', '#F87171']
 
 function DayChart({ days }: { days: DayData[] }) {
   const [selected, setSelected] = useState<number | null>(null)
@@ -161,6 +163,9 @@ export function Finances() {
             {/* Insight cards */}
             <InsightCards data={data} fmt={fmt} spaces={spaces} activeSpaceId={activeSpaceId} />
 
+            {/* Pattern cards */}
+            <PatternCards data={data} fmt={fmt} />
+
             {/* Daily chart */}
             {data.byDay && data.byDay.length > 0 && (
               <Card>
@@ -175,25 +180,40 @@ export function Finances() {
               </Card>
             )}
 
-            {/* By category */}
+            {/* Top categories bar chart */}
             {data.byCategory.length > 0 && (
               <Card>
-                <h3 className="font-bold mb-3">По категориям</h3>
-                <div className="space-y-3">
-                  {data.byCategory.map((cat) => (
-                    <div key={cat.category}>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span>{cat.emoji} {cat.category}</span>
-                        <span className="font-bold">{fmt(cat.amount)}</span>
-                      </div>
-                      <div className="h-1.5 bg-card2 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-coral rounded-full"
-                          style={{ width: `${cat.percent}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                <h3 className="font-bold mb-3">📊 Топ категории</h3>
+                <div className="space-y-2.5">
+                  {[...data.byCategory]
+                    .sort((a, b) => b.amount - a.amount)
+                    .slice(0, 6)
+                    .map((cat, i) => {
+                      const maxAmount = data.byCategory.reduce((m, c) => Math.max(m, c.amount), 1)
+                      const barWidth = Math.max(8, (cat.amount / maxAmount) * 100)
+                      return (
+                        <div key={cat.category} className="flex items-center gap-2.5">
+                          <span className="text-base w-7 text-center flex-shrink-0">{cat.emoji}</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex justify-between text-xs mb-0.5">
+                              <span className="truncate">{cat.category}</span>
+                              <span className="font-bold text-muted ml-2 flex-shrink-0">{cat.percent}%</span>
+                            </div>
+                            <div className="h-5 bg-card2 rounded-lg overflow-hidden">
+                              <div
+                                className="h-full rounded-lg flex items-center justify-end pr-2"
+                                style={{
+                                  width: `${barWidth}%`,
+                                  backgroundColor: BAR_COLORS[i % BAR_COLORS.length],
+                                }}
+                              >
+                                <span className="text-[10px] font-bold text-white/90">{fmt(cat.amount)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
                 </div>
               </Card>
             )}
@@ -304,6 +324,74 @@ function InsightCards({ data, fmt, spaces, activeSpaceId }: {
               Бюджет: {fmt(budget)} · расход: ~{Math.round((forecastedExpense / budget) * 100)}%
             </div>
           )}
+        </Card>
+      )}
+    </>
+  )
+}
+
+function PatternCards({ data, fmt }: {
+  data: import('../types').AnalyticsSummary
+  fmt: (n: number) => string
+}) {
+  const isCurrentMonth = data.daysElapsed < data.daysInMonth
+  const avgDailyExpense = data.daysElapsed > 0 ? data.expense / data.daysElapsed : 0
+  const daysToZero = (data.balance > 0 && avgDailyExpense > 0)
+    ? Math.floor(data.balance / avgDailyExpense)
+    : data.balance <= 0 ? 0 : Infinity
+
+  let dtzStatus: 'green' | 'yellow' | 'red' = 'green'
+  if (daysToZero <= 30) dtzStatus = 'red'
+  else if (daysToZero <= 90) dtzStatus = 'yellow'
+
+  const statusColors = {
+    green: { text: 'text-green', bg: 'bg-green', border: 'border-green/30' },
+    yellow: { text: 'text-yellow-400', bg: 'bg-yellow-400', border: 'border-yellow-400/30' },
+    red: { text: 'text-red', bg: 'bg-red', border: 'border-red/30' },
+  }
+  const sc = statusColors[dtzStatus]
+
+  return (
+    <>
+      {/* Most expensive day + Most frequent category */}
+      {(data.mostExpensiveDay || data.frequentCategory) && (
+        <div className="grid grid-cols-2 gap-3">
+          {data.mostExpensiveDay && (
+            <Card>
+              <div className="text-xs text-muted mb-1">💸 Дорогой день</div>
+              <div className="font-bold text-sm">{data.mostExpensiveDay.day}</div>
+              <div className="text-xs text-muted mt-1">{fmt(data.mostExpensiveDay.amount)}</div>
+            </Card>
+          )}
+          {data.frequentCategory && (
+            <Card>
+              <div className="text-xs text-muted mb-1">🔄 Частая категория</div>
+              <div className="font-bold text-sm">{data.frequentCategory.emoji} {data.frequentCategory.category}</div>
+              <div className="text-xs text-muted mt-1">
+                {data.frequentCategory.count} {pluralize(data.frequentCategory.count, 'операция', 'операции', 'операций')}
+              </div>
+            </Card>
+          )}
+        </div>
+      )}
+
+      {/* Days to zero */}
+      {isCurrentMonth && data.daysElapsed > 0 && avgDailyExpense > 0 && (
+        <Card className={sc.border}>
+          <div className="flex items-center gap-2 mb-1">
+            <span className={cn('w-2.5 h-2.5 rounded-full', sc.bg)} />
+            <span className="text-xs text-muted">⏳ Дней до нуля</span>
+          </div>
+          <div className={cn('font-bold text-lg', sc.text)}>
+            {data.balance <= 0
+              ? 'Баланс уже отрицательный'
+              : daysToZero > 365
+                ? '365+ дн.'
+                : `${daysToZero} дн.`}
+          </div>
+          <div className="text-xs text-muted mt-1">
+            при текущих тратах ~{fmt(avgDailyExpense)}/день
+          </div>
         </Card>
       )}
     </>

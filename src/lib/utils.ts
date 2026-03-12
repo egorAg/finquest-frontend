@@ -39,6 +39,16 @@ export function cn(...classes: (string | false | null | undefined)[]) {
   return classes.filter(Boolean).join(' ')
 }
 
+/** Русская плюрализация: 1→one, 2-4→few, 5+→many */
+export function pluralize(n: number, one: string, few: string, many: string): string {
+  const abs = Math.abs(n) % 100
+  const lastDigit = abs % 10
+  if (abs > 10 && abs < 20) return many
+  if (lastDigit > 1 && lastDigit < 5) return few
+  if (lastDigit === 1) return one
+  return many
+}
+
 /** Название уровня по номеру */
 export function levelName(level: number): string {
   const names = ['', 'Новичок', 'Копилка', 'Финансист', 'Аналитик', 'Инвестор', 'Мастер', 'Гуру', 'Легенда', 'Оракул', 'Архитектор']

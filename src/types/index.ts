@@ -129,6 +129,8 @@ export interface AnalyticsSummary {
   prevMonth: { income: number; expense: number; balance: number }
   daysInMonth: number
   daysElapsed: number
+  mostExpensiveDay: { day: string; dayIndex: number; amount: number } | null
+  frequentCategory: { category: string; emoji: string; count: number } | null
 }
 
 export interface KnowledgeArticle {
