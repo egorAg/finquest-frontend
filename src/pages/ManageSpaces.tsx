@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAppStore } from '../store'
 import { getSpaces, updateSpace, deleteSpace, leaveSpace } from '../api'
@@ -16,7 +15,6 @@ const TYPE_LABEL: Record<Space['type'], string> = {
 }
 
 export function ManageSpaces() {
-  const navigate = useNavigate()
   const qc = useQueryClient()
   const { user, activeSpaceId, setActiveSpaceId } = useAppStore()
 

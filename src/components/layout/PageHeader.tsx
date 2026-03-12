@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 
 interface PageHeaderProps {
   title: string
-  back?: boolean
+  back?: boolean | (() => void)
   right?: React.ReactNode
 }
 
@@ -12,7 +12,7 @@ export function PageHeader({ title, back = false, right }: PageHeaderProps) {
     <div className="flex items-center justify-between px-[18px] pt-4 pb-2">
       {back ? (
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => typeof back === 'function' ? back() : navigate(-1)}
           className="w-9 h-9 rounded-xl bg-card2 flex items-center justify-center text-lg"
         >
           ←
