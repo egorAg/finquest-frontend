@@ -14,9 +14,6 @@ export function Goals() {
   const { activeSpaceId } = useAppStore()
   const fmt = useFmt()
   const [tab, setTab] = useState<'active' | 'archived'>('active')
-  const [contribute, setContribute] = useState<{ id: string; name: string } | null>(null)
-  const [contributeAmount, setContributeAmount] = useState('')
-
   const { data: goals = [] } = useQuery({
     queryKey: ['goals', activeSpaceId],
     queryFn: () => getGoals(activeSpaceId ?? undefined),
@@ -76,7 +73,7 @@ export function Goals() {
                 </div>
                 {!goal.isCompleted && (
                   <div className="flex gap-2">
-                    <Button size="sm" variant="secondary" className="flex-1" onClick={() => { setContribute({ id: goal.id, name: goal.name }); setContributeAmount('') }}>
+                    <Button size="sm" variant="secondary" className="flex-1" onClick={() => navigate(`/goals/${goal.id}/contribute`, { state: { goal } })}>
                       💙 Внести
                     </Button>
                     <Button size="sm" variant="secondary" onClick={() => doUpdate({ id: goal.id, data: { currentAmount: goal.targetAmount } })}>
@@ -90,35 +87,6 @@ export function Goals() {
         )}
       </div>
 
-      {/* Contribute bottom sheet */}
-      {contribute && (
-        <div className="fixed inset-0 z-50 flex items-end">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setContribute(null)} />
-          <div className="relative w-full bg-card rounded-t-3xl p-6 space-y-4">
-            <h3 className="font-display font-bold text-lg">Внести в «{contribute.name}»</h3>
-            <input
-              type="number"
-              placeholder="Сумма"
-              value={contributeAmount}
-              onChange={(e) => setContributeAmount(e.target.value)}
-              className="w-full bg-card2 rounded-2xl px-4 py-3 text-xl font-bold outline-none border border-border"
-              inputMode="decimal"
-              autoFocus
-            />
-            <Button
-              size="lg"
-              disabled={!contributeAmount}
-              onClick={() => {
-                const goal = goals.find((g) => g.id === contribute.id)!
-                doUpdate({ id: contribute.id, data: { currentAmount: goal.currentAmount + parseFloat(contributeAmount) } })
-                setContribute(null)
-              }}
-            >
-              Внести
-            </Button>
-          </div>
-        </div>
-      )}
 
     </div>
   )
