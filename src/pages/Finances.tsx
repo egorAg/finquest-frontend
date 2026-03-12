@@ -8,45 +8,99 @@ import { fmt, currentMonth } from '../lib/utils'
 
 type DayData = { date: string; income: number; expense: number }
 
+function fmtShort(n: number) {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
+  if (n >= 1_000) return `${(n / 1_000).toFixed(n >= 10_000 ? 0 : 1)}K`
+  return String(Math.round(n))
+}
+
 function DayChart({ days }: { days: DayData[] }) {
+  const [selected, setSelected] = useState<number | null>(null)
   if (!days || days.length === 0) return null
-  const W = 320
-  const H = 100
-  const barW = Math.max(4, Math.floor((W - days.length * 2) / days.length / 2))
-  const gap = 2
+
   const maxVal = Math.max(...days.flatMap((d) => [d.income, d.expense]), 1)
-  const slotW = Math.floor(W / days.length)
+  const barH = 90
+  const labelH = 18
+  const tooltipH = 28
+
+  const sel = selected !== null ? days[selected] : null
 
   return (
-    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'block' }}>
-      {days.map((d, i) => {
-        const x = i * slotW + slotW / 2
-        const ih = Math.max(2, (d.income / maxVal) * (H - 8))
-        const eh = Math.max(2, (d.expense / maxVal) * (H - 8))
-        return (
-          <g key={d.date}>
-            <rect
-              x={x - barW - gap / 2}
-              y={H - ih}
-              width={barW}
-              height={ih}
-              rx={2}
-              fill="#4ADE80"
-              fillOpacity={0.8}
-            />
-            <rect
-              x={x + gap / 2}
-              y={H - eh}
-              width={barW}
-              height={eh}
-              rx={2}
-              fill="#F97316"
-              fillOpacity={0.8}
-            />
-          </g>
-        )
-      })}
-    </svg>
+    <div>
+      {/* Tooltip */}
+      <div className={`flex items-center justify-center gap-3 text-xs mb-2 transition-opacity ${sel ? 'opacity-100' : 'opacity-0'}`} style={{ minHeight: tooltipH }}>
+        {sel && (
+          <>
+            <span className="text-muted">{new Date(sel.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}</span>
+            {sel.income > 0 && <span className="text-green font-semibold">+{fmt(sel.income)}</span>}
+            {sel.expense > 0 && <span className="text-coral font-semibold">−{fmt(sel.expense)}</span>}
+            {sel.income === 0 && sel.expense === 0 && <span className="text-muted">Нет операций</span>}
+          </>
+        )}
+      </div>
+
+      {/* Bars */}
+      <div className="flex items-end gap-[2px]" style={{ height: barH }}>
+        {days.map((d, i) => {
+          const ih = d.income > 0 ? Math.max(4, (d.income / maxVal) * (barH - 4)) : 0
+          const eh = d.expense > 0 ? Math.max(4, (d.expense / maxVal) * (barH - 4)) : 0
+          const isActive = selected === i
+          return (
+            <div
+              key={d.date}
+              className="flex-1 flex items-end justify-center gap-[1px] cursor-pointer"
+              style={{ height: '100%' }}
+              onClick={() => setSelected(isActive ? null : i)}
+            >
+              {ih > 0 && (
+                <div
+                  className="rounded-sm transition-opacity"
+                  style={{
+                    width: '40%',
+                    height: ih,
+                    backgroundColor: '#4ADE80',
+                    opacity: isActive ? 1 : 0.7,
+                  }}
+                />
+              )}
+              {eh > 0 && (
+                <div
+                  className="rounded-sm transition-opacity"
+                  style={{
+                    width: '40%',
+                    height: eh,
+                    backgroundColor: '#F97316',
+                    opacity: isActive ? 1 : 0.7,
+                  }}
+                />
+              )}
+              {ih === 0 && eh === 0 && (
+                <div
+                  className="rounded-sm"
+                  style={{ width: '60%', height: 2, backgroundColor: 'rgba(255,255,255,0.1)' }}
+                />
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Day labels */}
+      <div className="flex gap-[2px]" style={{ height: labelH }}>
+        {days.map((d, i) => {
+          const day = new Date(d.date).getDate()
+          const show = days.length <= 15 || day === 1 || day % 5 === 0 || i === days.length - 1
+          return (
+            <div
+              key={d.date}
+              className={`flex-1 text-center text-[9px] pt-1 ${selected === i ? 'text-white font-bold' : 'text-muted'}`}
+            >
+              {show ? day : ''}
+            </div>
+          )
+        })}
+      </div>
+    </div>
   )
 }
 
