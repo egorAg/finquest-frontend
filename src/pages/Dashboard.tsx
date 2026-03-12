@@ -214,28 +214,45 @@ export function Dashboard() {
         </div>
 
         {/* Active goals */}
-        {activeGoals.length > 0 && (
-          <div
-            className="rounded-3xl mb-[14px] border"
-            style={{ padding: '18px 18px 14px', background: '#161B27', borderColor: 'rgba(255,255,255,.06)' }}
-          >
-            <div className="flex items-center justify-between mb-[14px]">
-              <span className="font-black text-text" style={{ fontSize: 15 }}>Цели 🎯</span>
+        <div
+          className="rounded-3xl mb-[14px] border"
+          style={{ padding: '18px 18px 14px', background: '#161B27', borderColor: 'rgba(255,255,255,.06)' }}
+        >
+          <div className="flex items-center justify-between mb-[14px]">
+            <span className="font-black text-text" style={{ fontSize: 15 }}>Цели 🎯</span>
+            <button
+              onClick={() => navigate('/goals')}
+              className="font-bold font-sans"
+              style={{ fontSize: 12, color: 'rgba(255,255,255,.3)', background: 'none', border: 'none' }}
+            >
+              Все →
+            </button>
+          </div>
+          {activeGoals.length === 0 ? (
+            <div className="text-center py-4">
+              <div style={{ fontSize: 30, marginBottom: 8 }}>🎯</div>
+              <div className="font-sans" style={{ fontSize: 13, color: 'rgba(255,255,255,.3)', marginBottom: 14 }}>
+                Нет активных целей
+              </div>
               <button
                 onClick={() => navigate('/goals')}
-                className="font-bold font-sans"
-                style={{ fontSize: 12, color: 'rgba(255,255,255,.3)', background: 'none', border: 'none' }}
+                className="font-bold"
+                style={{
+                  fontSize: 13, padding: '8px 20px', borderRadius: 12,
+                  background: 'rgba(74,222,128,.15)', color: '#4ADE80', border: 'none',
+                }}
               >
-                Все →
+                + Создать цель
               </button>
             </div>
-            {activeGoals.slice(0, 2).map((goal) => {
+          ) : (
+            activeGoals.slice(0, 2).map((goal) => {
               const pct = Math.min((goal.currentAmount / goal.targetAmount) * 100, 100)
               return (
                 <div
                   key={goal.id}
                   className="cursor-pointer mb-[14px] last:mb-0"
-                  onClick={() => navigate(`/goals/${goal.id}`)}
+                  onClick={() => navigate('/goals')}
                 >
                   <div className="flex items-center justify-between mb-[7px]">
                     <div className="flex items-center" style={{ gap: 10 }}>
@@ -260,9 +277,9 @@ export function Dashboard() {
                   </div>
                 </div>
               )
-            })}
-          </div>
-        )}
+            })
+          )}
+        </div>
 
         {/* Recent transactions */}
         <div
