@@ -116,16 +116,56 @@ export function Settings() {
           </Card>
         </div>
 
-        {/* App info */}
-        <Card className="text-center text-muted text-xs py-4">
-          <div className="text-2xl mb-1">💰</div>
-          <div className="font-bold text-text">FinQuest</div>
-          <div>v1.0.0 · Дипломный проект</div>
-        </Card>
+        {/* About */}
+        <div>
+          <h2 className="font-display font-bold px-1 mb-2">О приложении</h2>
+          <Card className="divide-y divide-border p-0 overflow-hidden">
+            <LinkRow
+              emoji="✉️"
+              label="Обратная связь"
+              description="Написать разработчику"
+              onClick={() => window.open('mailto:egor.ageev.work@yandex.ru', '_blank')}
+            />
+            <LinkRow
+              emoji="🔒"
+              label="Политика конфиденциальности"
+              description="Как мы храним ваши данные"
+              onClick={() => window.open('mailto:egor.ageev.work@yandex.ru?subject=Политика конфиденциальности', '_blank')}
+            />
+            <div className="flex items-center justify-between px-4 py-3">
+              <div className="flex items-center gap-3">
+                <span className="text-xl">💰</span>
+                <div>
+                  <div className="font-bold text-sm">FinQuest</div>
+                  <div className="text-xs text-muted">v1.0.0 · Дипломный проект</div>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
 
         <div className="h-4" />
       </div>
     </div>
+  )
+}
+
+function LinkRow({
+  label, description, emoji, onClick,
+}: {
+  label: string; description?: string; emoji: string; onClick: () => void
+}) {
+  return (
+    <button type="button" onClick={onClick} className="flex items-center justify-between px-4 py-3 w-full active:opacity-60">
+      <div className="flex items-center gap-3">
+        <span className="text-xl">{emoji}</span>
+        <div className="text-left">
+          <div className="font-bold text-sm">{label}</div>
+          {description && <div className="text-xs text-muted">{description}</div>}
+        </div>
+      </div>
+      <span className="text-muted text-sm">›</span>
+    </button>
   )
 }
 
