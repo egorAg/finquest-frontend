@@ -14,7 +14,7 @@ export function Settings() {
   const [localSettings, setLocalSettings] = useState<{
     notifications: boolean
     botNotifications: boolean
-    theme: 'dark' | 'light'
+    theme: 'dark' | 'light' | 'system'
   } | null>(null)
 
   const { mutate } = useMutation({
@@ -31,7 +31,7 @@ export function Settings() {
   const settings = localSettings ?? {
     notifications: user.settings?.notifications ?? true,
     botNotifications: user.settings?.botNotifications ?? true,
-    theme: (user.settings?.theme ?? 'dark') as 'dark' | 'light',
+    theme: (user.settings?.theme ?? 'dark') as 'dark' | 'light' | 'system',
   }
 
   const toggle = (key: 'notifications' | 'botNotifications' | 'theme') => {
@@ -43,10 +43,6 @@ export function Settings() {
       const next = !settings.botNotifications
       setLocalSettings({ ...settings, botNotifications: next })
       mutate({ settings: { botNotifications: next } })
-    } else {
-      const next = settings.theme === 'dark' ? 'light' : 'dark'
-      setLocalSettings({ ...settings, theme: next })
-      mutate({ settings: { theme: next } })
     }
   }
 
@@ -85,16 +81,31 @@ export function Settings() {
           </Card>
         </div>
 
-        {/* Preferences */}
+        {/* Theme */}
         <div>
-          <h2 className="font-display font-bold px-1 mb-2">Предпочтения</h2>
-          <Card className="divide-y divide-border p-0 overflow-hidden">
-            <ToggleRow
-              label="Светлая тема"
-              emoji="☀️"
-              value={settings.theme === 'light'}
-              onChange={() => toggle('theme')}
-            />
+          <h2 className="font-display font-bold px-1 mb-2">Тема</h2>
+          <Card className="flex gap-2">
+            {([
+              { value: 'dark', label: '🌙 Тёмная' },
+              { value: 'system', label: '⚙️ Системная' },
+              { value: 'light', label: '☀️ Светлая' },
+            ] as const).map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => {
+                  setLocalSettings({ ...settings, theme: opt.value })
+                  mutate({ settings: { theme: opt.value } })
+                }}
+                className="flex-1 py-2 rounded-xl font-bold text-xs transition-all"
+                style={{
+                  background: settings.theme === opt.value ? 'rgba(74,222,128,.15)' : 'var(--color-card2)',
+                  color: settings.theme === opt.value ? '#4ADE80' : 'var(--color-muted)',
+                  border: settings.theme === opt.value ? '1px solid rgba(74,222,128,.3)' : '1px solid transparent',
+                }}
+              >
+                {opt.label}
+              </button>
+            ))}
           </Card>
         </div>
 

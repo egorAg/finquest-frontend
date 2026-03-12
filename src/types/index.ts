@@ -2,7 +2,7 @@ export interface UserSettings {
   currency: string
   notifications: boolean
   botNotifications: boolean
-  theme: 'dark' | 'light'
+  theme: 'dark' | 'light' | 'system'
 }
 
 export interface User {

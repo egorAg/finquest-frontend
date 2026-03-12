@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useAuth } from './hooks/useAuth'
 import { useAppStore } from './store'
+import { useTheme } from './hooks/useTheme'
 import { AppLayout } from './components/layout/AppLayout'
 import { Dashboard } from './pages/Dashboard'
 import { Finances } from './pages/Finances'
@@ -34,8 +35,8 @@ const qc = new QueryClient({
 
 function AppRoutes() {
   const { loading, error } = useAuth()
-
   const { user } = useAppStore()
+  useTheme()
   if (!loading && !error && user && !user.onboardingDone) {
     return <Onboarding />
   }
