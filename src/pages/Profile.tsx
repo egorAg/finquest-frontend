@@ -20,11 +20,13 @@ export function Profile() {
   const [showPicker, setShowPicker] = useState(false)
 
   const openPicker = () => {
-    window.Telegram?.WebApp?.disableVerticalSwipes?.()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(window as any).Telegram?.WebApp?.disableVerticalSwipes?.()
     setShowPicker(true)
   }
   const closePicker = () => {
-    window.Telegram?.WebApp?.enableVerticalSwipes?.()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(window as any).Telegram?.WebApp?.enableVerticalSwipes?.()
     setShowPicker(false)
   }
 
