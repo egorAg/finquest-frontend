@@ -30,7 +30,7 @@ function smoothPath(pts: [number, number][], tension = 0.35): string {
   return d
 }
 
-function LineChart({ data, period }: { data: ChartPoint[]; period: Period }) {
+function LineChart({ data }: { data: ChartPoint[] }) {
   const W = 330, H = 110, PAD_T = 8, PAD_B = 18
   const chartH = H - PAD_T - PAD_B
   const n = data.length
@@ -329,7 +329,7 @@ export function Dashboard() {
               Аналитика →
             </button>
           </div>
-          <LineChart data={chartData} period={period} />
+          <LineChart data={chartData} />
           <div className="flex gap-4 mt-[10px]">
             <div className="flex items-center gap-1.5">
               <div style={{ width: 8, height: 8, borderRadius: 2, background: '#4ADE80' }} />
