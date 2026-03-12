@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getChallenges, joinChallenge } from '../api'
+import { getChallenges, joinChallenge, getMe } from '../api'
+import { useAppStore } from '../store'
 import { PageHeader } from '../components/layout/PageHeader'
 import type { Challenge } from '../types'
 
@@ -58,11 +59,19 @@ function daysLeft(deadline: string): number {
 export function Challenges() {
   const [tab, setTab] = useState<Tab>('active')
   const qc = useQueryClient()
+  const { setUser } = useAppStore()
 
   const { data: challenges = [], isLoading } = useQuery({
     queryKey: ['challenges'],
     queryFn: getChallenges,
   })
+
+  // Sync user XP after backend may have awarded XP for completed challenges
+  useEffect(() => {
+    if (challenges.some((c) => c.joined && c.isCompleted)) {
+      getMe().then(setUser).catch(() => {})
+    }
+  }, [challenges])
 
   const { mutate: doJoin, isPending: joining } = useMutation({
     mutationFn: (id: string) => joinChallenge(id),
