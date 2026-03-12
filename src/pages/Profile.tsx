@@ -1,12 +1,32 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
 import { useAppStore } from '../store'
+import { updateMe } from '../api'
 import { Card } from '../components/ui/Card'
 import { XpBar } from '../components/ui/XpBar'
 import { PageHeader } from '../components/layout/PageHeader'
 
+const AVATAR_EMOJIS = [
+  '😀','😎','🤓','🧐','😏','🥸','🤩','😇','🥳','😈',
+  '🐱','🐶','🐸','🦊','🐼','🦁','🐯','🐨','🐮','🐷',
+  '🦄','🐙','🦋','🐬','🦅','🦉','🐲','🦝','🐺','🦊',
+  '🧙','🧑‍💻','👨‍🚀','🧑‍🎨','🥷','👑','🎩','🤖','👾','💀',
+]
+
 export function Profile() {
   const navigate = useNavigate()
-  const { user } = useAppStore()
+  const { user, setUser } = useAppStore()
+  const [showPicker, setShowPicker] = useState(false)
+
+  const { mutate: saveAvatar, isPending } = useMutation({
+    mutationFn: (emoji: string) => updateMe({ avatarEmoji: emoji }),
+    onSuccess: (updated) => {
+      setUser(updated)
+      setShowPicker(false)
+    },
+  })
+
   if (!user) return null
 
   return (
@@ -16,7 +36,19 @@ export function Profile() {
       } />
       <div className="px-[18px] pt-4 space-y-[14px]">
         <Card className="text-center py-6">
-          <div className="text-5xl mb-2">{user.avatarEmoji ?? '👤'}</div>
+          <button
+            type="button"
+            onClick={() => setShowPicker(true)}
+            className="relative inline-block mb-2 active:opacity-70"
+          >
+            <span className="text-5xl">{user.avatarEmoji ?? '👤'}</span>
+            <span
+              className="absolute -bottom-1 -right-1 flex items-center justify-center rounded-full text-xs font-bold"
+              style={{ width: 20, height: 20, background: '#4ADE80', color: '#052e16' }}
+            >
+              ✎
+            </span>
+          </button>
           <div className="font-display font-bold text-xl">{user.firstName} {user.lastName}</div>
           {user.username && <div className="text-sm text-muted">@{user.username}</div>}
           <div className="mt-3 text-sm text-muted">🔥 Серия {user.streakDays ?? 0} дней</div>
@@ -39,6 +71,43 @@ export function Profile() {
 
         <div className="h-4" />
       </div>
+
+      {/* Avatar picker bottom sheet */}
+      {showPicker && (
+        <div className="fixed inset-0 z-50 flex flex-col justify-end">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setShowPicker(false)} />
+          <div className="relative rounded-t-3xl p-5" style={{ background: '#161B27' }}>
+            <div className="flex items-center justify-between mb-4">
+              <span className="font-bold text-sm">Выбери аватарку</span>
+              <button
+                type="button"
+                onClick={() => setShowPicker(false)}
+                className="text-muted text-xl leading-none"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="grid grid-cols-8 gap-2">
+              {AVATAR_EMOJIS.map((emoji) => (
+                <button
+                  key={emoji}
+                  type="button"
+                  disabled={isPending}
+                  onClick={() => saveAvatar(emoji)}
+                  className="flex items-center justify-center rounded-xl active:opacity-60"
+                  style={{
+                    height: 44, fontSize: 24,
+                    background: emoji === user.avatarEmoji ? 'rgba(74,222,128,.2)' : 'rgba(255,255,255,.05)',
+                    border: emoji === user.avatarEmoji ? '1.5px solid #4ADE80' : '1.5px solid transparent',
+                  }}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
