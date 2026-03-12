@@ -81,6 +81,15 @@ export const getAchievements = () =>
 export const getLeaderboard = (params?: { season?: string; limit?: number }) =>
   apiClient.get<LeaderboardEntry[]>('/leaderboard', { params }).then((r) => r.data)
 
+export const getSeasonInfo = () =>
+  apiClient.get<{
+    seasonNumber: number
+    seasonStart: string
+    seasonEnd: string
+    daysLeft: number
+    rewards: { place: number; emoji: string; xp: number; label: string }[]
+  }>('/leaderboard/season-info').then((r) => r.data)
+
 // ─── Notifications ────────────────────────────────────────────────────────────
 
 export const getNotifications = () =>
