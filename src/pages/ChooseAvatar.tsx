@@ -38,7 +38,7 @@ export function ChooseAvatar() {
               className="flex items-center justify-center rounded-2xl active:opacity-60"
               style={{
                 height: 64, fontSize: 30,
-                background: emoji === user?.avatarEmoji ? 'rgba(74,222,128,.2)' : 'rgba(255,255,255,.05)',
+                background: emoji === user?.avatarEmoji ? 'rgba(74,222,128,.2)' : 'var(--color-card2)',
                 border: emoji === user?.avatarEmoji ? '1.5px solid #4ADE80' : '1.5px solid transparent',
               }}
             >

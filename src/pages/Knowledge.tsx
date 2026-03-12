@@ -56,7 +56,7 @@ export function Knowledge() {
               <span className="flex-shrink-0" style={{ fontSize: 28 }}>{a.emoji}</span>
               <div className="flex-1 min-w-0">
                 <div className="font-extrabold text-text leading-tight" style={{ fontSize: 13 }}>{a.title}</div>
-                <div className="font-sans mt-1" style={{ fontSize: 11, color: 'rgba(255,255,255,.28)' }}>
+                <div className="font-sans mt-1" style={{ fontSize: 11, color: 'var(--color-muted)' }}>
                   {a.readTime} мин · +{a.xpReward} XP
                 </div>
               </div>

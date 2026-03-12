@@ -115,7 +115,7 @@ export function Transactions() {
                     >
                       <div
                         className="flex items-center justify-center flex-shrink-0"
-                        style={{ width: 38, height: 38, borderRadius: 12, background: 'rgba(255,255,255,.06)', fontSize: 18 }}
+                        style={{ width: 38, height: 38, borderRadius: 12, background: 'var(--color-card2)', fontSize: 18 }}
                       >
                         {tx.categoryEmoji}
                       </div>

@@ -94,7 +94,7 @@ export function ManageSpaces() {
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
               className="w-full rounded-2xl px-4 py-3 font-bold outline-none border border-border"
-              style={{ background: '#161B27', fontSize: 15 }}
+              style={{ background: 'var(--color-card)', fontSize: 15 }}
             />
           </div>
 
@@ -111,7 +111,7 @@ export function ManageSpaces() {
                   className="flex items-center justify-center rounded-2xl active:opacity-60"
                   style={{
                     height: 56, fontSize: 26,
-                    background: e === editEmoji ? 'rgba(74,222,128,.2)' : 'rgba(255,255,255,.05)',
+                    background: e === editEmoji ? 'rgba(74,222,128,.2)' : 'var(--color-card2)',
                     border: e === editEmoji ? '1.5px solid #4ADE80' : '1.5px solid transparent',
                   }}
                 >
@@ -143,7 +143,7 @@ export function ManageSpaces() {
             <div
               key={space.id}
               className="rounded-2xl border p-4"
-              style={{ background: '#161B27', borderColor: 'rgba(255,255,255,.06)' }}
+              style={{ background: 'var(--color-card)', borderColor: 'var(--color-border)' }}
             >
               <div className="flex items-center gap-3 mb-3">
                 <span style={{ fontSize: 26 }}>{space.emoji}</span>
@@ -163,7 +163,7 @@ export function ManageSpaces() {
                       type="button"
                       onClick={() => openEdit(space)}
                       className="flex-1 py-2 rounded-xl text-sm font-bold"
-                      style={{ background: 'rgba(255,255,255,.06)', color: 'rgba(255,255,255,.7)' }}
+                      style={{ background: 'var(--color-card2)', color: 'var(--color-muted)' }}
                     >
                       ✎ Изменить
                     </button>

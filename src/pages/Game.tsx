@@ -7,8 +7,8 @@ import { PageHeader } from '../components/layout/PageHeader'
 
 // card wrapper style shared in this page
 const CARD_STYLE = {
-  background: '#161B27',
-  borderColor: 'rgba(255,255,255,.06)',
+  background: 'var(--color-card)',
+  borderColor: 'var(--color-border)',
   padding: '18px 18px 14px',
 }
 
@@ -45,14 +45,14 @@ export function Game() {
             <button
               onClick={() => navigate('/challenges')}
               className="font-bold font-sans"
-              style={{ fontSize: 12, color: 'rgba(255,255,255,.3)', background: 'none', border: 'none' }}
+              style={{ fontSize: 12, color: 'var(--color-muted)', background: 'none', border: 'none' }}
             >
               Все →
             </button>
           </div>
 
           {active.length === 0 ? (
-            <div className="text-center py-2 font-sans" style={{ fontSize: 13, color: 'rgba(255,255,255,.25)' }}>
+            <div className="text-center py-2 font-sans" style={{ fontSize: 13, color: 'var(--color-muted)' }}>
               Нет активных челленджей
             </div>
           ) : (
@@ -65,28 +65,28 @@ export function Game() {
                   className="flex items-center gap-3 rounded-2xl mb-[10px] last:mb-0 border"
                   style={{
                     padding: '13px 14px',
-                    background: 'rgba(255,255,255,.04)',
-                    borderColor: 'rgba(255,255,255,.05)',
+                    background: 'var(--color-card2)',
+                    borderColor: 'var(--color-border)',
                   }}
                 >
                   <span className="flex-shrink-0" style={{ fontSize: 24 }}>{ch.emoji}</span>
                   <div className="flex-1 min-w-0">
                     <div className="font-extrabold text-text mb-1" style={{ fontSize: 13 }}>{ch.title}</div>
                     <div className="flex justify-between mb-[5px]">
-                      <span className="font-sans truncate pr-2" style={{ fontSize: 11, color: 'rgba(255,255,255,.3)' }}>
+                      <span className="font-sans truncate pr-2" style={{ fontSize: 11, color: 'var(--color-muted)' }}>
                         {ch.description}
                       </span>
                       <span className="font-extrabold text-yellow flex-shrink-0" style={{ fontSize: 11 }}>
                         {Math.round(pct)}%
                       </span>
                     </div>
-                    <div className="rounded-full overflow-hidden" style={{ height: 6, background: 'rgba(255,255,255,.07)' }}>
+                    <div className="rounded-full overflow-hidden" style={{ height: 6, background: 'var(--color-track)' }}>
                       <div className="h-full rounded-full bg-yellow" style={{ width: `${pct}%` }} />
                     </div>
                   </div>
                   <div className="flex flex-col items-end flex-shrink-0" style={{ gap: 2 }}>
                     <span className="font-black text-yellow" style={{ fontSize: 13 }}>+{ch.xpReward} XP</span>
-                    <span className="font-sans" style={{ fontSize: 10, color: 'rgba(255,255,255,.3)' }}>{daysLeft} дн.</span>
+                    <span className="font-sans" style={{ fontSize: 10, color: 'var(--color-muted)' }}>{daysLeft} дн.</span>
                   </div>
                 </div>
               )
@@ -101,14 +101,14 @@ export function Game() {
             <button
               onClick={() => navigate('/leaderboard')}
               className="font-bold font-sans"
-              style={{ fontSize: 12, color: 'rgba(255,255,255,.3)', background: 'none', border: 'none' }}
+              style={{ fontSize: 12, color: 'var(--color-muted)', background: 'none', border: 'none' }}
             >
               Все →
             </button>
           </div>
 
           {leaderboard.length === 0 ? (
-            <div className="text-center py-2 font-sans" style={{ fontSize: 13, color: 'rgba(255,255,255,.25)' }}>
+            <div className="text-center py-2 font-sans" style={{ fontSize: 13, color: 'var(--color-muted)' }}>
               Нет данных
             </div>
           ) : (
@@ -118,7 +118,7 @@ export function Game() {
                 className="flex items-center mb-[10px] last:mb-0 rounded-2xl"
                 style={{
                   gap: 12, padding: '10px 12px',
-                  background: 'rgba(255,255,255,.04)',
+                  background: 'var(--color-card2)',
                 }}
               >
                 <span className="font-black w-6 text-center flex-shrink-0" style={{ fontSize: 16 }}>

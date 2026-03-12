@@ -51,7 +51,7 @@ export function CreateGoal() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="w-full rounded-2xl px-4 py-3 font-bold outline-none border border-border"
-            style={{ background: '#161B27', fontSize: 15 }}
+            style={{ background: 'var(--color-card)', fontSize: 15 }}
           />
         </div>
 
@@ -65,7 +65,7 @@ export function CreateGoal() {
             onChange={(e) => setTarget(e.target.value)}
             inputMode="decimal"
             className="w-full rounded-2xl px-4 py-3 font-bold outline-none border border-border"
-            style={{ background: '#161B27', fontSize: 15 }}
+            style={{ background: 'var(--color-card)', fontSize: 15 }}
           />
         </div>
 
@@ -83,7 +83,7 @@ export function CreateGoal() {
                 className="flex items-center justify-center rounded-xl active:opacity-60"
                 style={{
                   height: 44, fontSize: 22,
-                  background: e === emoji ? 'rgba(74,222,128,.2)' : 'rgba(255,255,255,.05)',
+                  background: e === emoji ? 'rgba(74,222,128,.2)' : 'var(--color-card2)',
                   border: e === emoji ? '1.5px solid #4ADE80' : '1.5px solid transparent',
                 }}
               >

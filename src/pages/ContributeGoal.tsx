@@ -89,7 +89,7 @@ export function ContributeGoal() {
         {/* Goal card */}
         <div
           className="rounded-2xl border p-4"
-          style={{ background: '#161B27', borderColor: 'rgba(255,255,255,.06)' }}
+          style={{ background: 'var(--color-card)', borderColor: 'var(--color-border)' }}
         >
           <div className="flex items-center gap-3 mb-3">
             <span style={{ fontSize: 28 }}>{goal.emoji}</span>
@@ -100,7 +100,7 @@ export function ContributeGoal() {
               </div>
             </div>
           </div>
-          <div className="rounded-full overflow-hidden" style={{ height: 6, background: 'rgba(255,255,255,.08)' }}>
+          <div className="rounded-full overflow-hidden" style={{ height: 6, background: 'var(--color-track)' }}>
             <div className="h-full rounded-full" style={{ width: `${pct}%`, background: goal.color }} />
           </div>
           <div className="text-xs text-muted mt-1.5">Осталось: {fmt(remaining)}</div>
@@ -109,7 +109,7 @@ export function ContributeGoal() {
         {/* Balance */}
         <div
           className="rounded-2xl border p-4 flex items-center justify-between"
-          style={{ background: '#161B27', borderColor: 'rgba(255,255,255,.06)' }}
+          style={{ background: 'var(--color-card)', borderColor: 'var(--color-border)' }}
         >
           <span className="text-sm text-muted">Баланс пространства</span>
           <span className="font-bold text-green text-sm">{fmt(balance)}</span>
@@ -127,12 +127,12 @@ export function ContributeGoal() {
             autoFocus
             className="w-full rounded-2xl px-4 py-4 font-black outline-none border"
             style={{
-              background: '#161B27', fontSize: 28,
-              borderColor: errorMsg ? '#F97316' : 'rgba(255,255,255,.06)',
+              background: 'var(--color-card)', fontSize: 28,
+              borderColor: errorMsg ? 'var(--color-coral)' : 'var(--color-border)',
             }}
           />
           {errorMsg && (
-            <div className="text-xs mt-1.5" style={{ color: '#F97316' }}>{errorMsg}</div>
+            <div className="text-xs mt-1.5 text-coral">{errorMsg}</div>
           )}
         </div>
 
@@ -144,7 +144,7 @@ export function ContributeGoal() {
               type="button"
               onClick={() => setAmount(String(q))}
               className="flex-1 py-2 rounded-xl text-sm font-bold"
-              style={{ background: 'rgba(255,255,255,.06)', color: 'rgba(255,255,255,.6)' }}
+              style={{ background: 'var(--color-card2)', color: 'var(--color-muted)' }}
             >
               {q.toLocaleString('ru-RU')}
             </button>

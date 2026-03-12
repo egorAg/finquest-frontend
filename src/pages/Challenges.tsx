@@ -133,7 +133,7 @@ export function Challenges() {
             <div
               key={ch.id}
               className="rounded-3xl border p-4"
-              style={{ background: '#161B27', borderColor: 'rgba(255,255,255,.06)' }}
+              style={{ background: 'var(--color-card)', borderColor: 'var(--color-border)' }}
             >
               {/* Header */}
               <div className="flex items-start gap-3 mb-3">
@@ -160,7 +160,7 @@ export function Challenges() {
                       {ch.isFailed ? '✗' : ch.isCompleted ? '✓' : `${Math.round(p)}%`}
                     </span>
                   </div>
-                  <div className="h-1.5 rounded-full overflow-hidden mb-3" style={{ background: 'rgba(255,255,255,.07)' }}>
+                  <div className="h-1.5 rounded-full overflow-hidden mb-3" style={{ background: 'var(--color-track)' }}>
                     <div
                       className="h-full rounded-full transition-all"
                       style={{ width: `${p}%`, backgroundColor: color }}
@@ -188,7 +188,7 @@ export function Challenges() {
               )}
 
               {ch.joined && ch.isCompleted && (
-                <div className="text-center text-xs font-bold py-1" style={{ color: '#4ADE80' }}>
+                <div className="text-center text-xs font-bold py-1 text-green">
                   Завершено!
                 </div>
               )}

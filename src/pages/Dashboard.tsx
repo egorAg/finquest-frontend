@@ -74,7 +74,7 @@ export function Dashboard() {
         <div className="flex flex-col" style={{ gap: 2 }}>
           <span
             className="font-semibold font-sans"
-            style={{ fontSize: 12, color: 'rgba(255,255,255,.35)' }}
+            style={{ fontSize: 12, color: 'var(--color-muted)' }}
           >
             Добрый день,
           </span>
@@ -88,7 +88,7 @@ export function Dashboard() {
             className="flex items-center justify-center"
             style={{
               width: 38, height: 38, borderRadius: 12,
-              background: 'rgba(255,255,255,.06)',
+              background: 'var(--color-card2)',
               fontSize: 17, border: 'none',
             }}
           >
@@ -124,7 +124,7 @@ export function Dashboard() {
         {/* Balance Card */}
         <div
           className="rounded-3xl mb-[14px] border"
-          style={{ padding: 20, background: '#161B27', borderColor: 'rgba(255,255,255,.06)' }}
+          style={{ padding: 20, background: 'var(--color-card)', borderColor: 'var(--color-border)' }}
         >
           {/* Top: space switcher + period pills */}
           <div className="flex items-center justify-between mb-4">
@@ -133,8 +133,8 @@ export function Dashboard() {
               className="flex items-center font-extrabold"
               style={{
                 gap: 7, borderRadius: 12, padding: '6px 12px',
-                fontSize: 13, background: 'rgba(255,255,255,.06)',
-                color: '#F0F4FF', border: 'none',
+                fontSize: 13, background: 'var(--color-card2)',
+                color: 'var(--color-text)', border: 'none',
               }}
             >
               <span>{activeSpace?.emoji ?? '👤'}</span>
@@ -149,8 +149,8 @@ export function Dashboard() {
                   className="font-bold font-sans"
                   style={{
                     borderRadius: 8, padding: '4px 10px', fontSize: 11,
-                    background: period === p ? 'rgba(255,255,255,.1)' : 'transparent',
-                    color: period === p ? '#F0F4FF' : 'rgba(255,255,255,.3)',
+                    background: period === p ? 'var(--color-card2)' : 'transparent',
+                    color: period === p ? 'var(--color-text)' : 'var(--color-muted)',
                     border: 'none', cursor: 'pointer',
                   }}
                 >
@@ -163,7 +163,7 @@ export function Dashboard() {
           {/* Balance amount */}
           <div
             className="font-black"
-            style={{ fontSize: 38, letterSpacing: '-.5px', color: '#F0F4FF', marginBottom: 18 }}
+            style={{ fontSize: 38, letterSpacing: '-.5px', color: 'var(--color-text)', marginBottom: 18 }}
           >
             {balance >= 0 ? '+' : ''}{fmt(balance)}
           </div>
@@ -172,7 +172,7 @@ export function Dashboard() {
           <div className="flex gap-2.5">
             <div
               className="flex-1 flex items-center rounded-[14px]"
-              style={{ gap: 10, padding: '12px 14px', background: 'rgba(255,255,255,.04)' }}
+              style={{ gap: 10, padding: '12px 14px', background: 'var(--color-card2)' }}
             >
               <div
                 className="flex items-center justify-center flex-shrink-0"
@@ -183,7 +183,7 @@ export function Dashboard() {
               <div className="flex flex-col">
                 <span
                   className="font-bold uppercase font-sans"
-                  style={{ fontSize: 10, letterSpacing: '.06em', color: 'rgba(255,255,255,.3)' }}
+                  style={{ fontSize: 10, letterSpacing: '.06em', color: 'var(--color-muted)' }}
                 >
                   Доходы · {periodLabel}
                 </span>
@@ -192,7 +192,7 @@ export function Dashboard() {
             </div>
             <div
               className="flex-1 flex items-center rounded-[14px]"
-              style={{ gap: 10, padding: '12px 14px', background: 'rgba(255,255,255,.04)' }}
+              style={{ gap: 10, padding: '12px 14px', background: 'var(--color-card2)' }}
             >
               <div
                 className="flex items-center justify-center flex-shrink-0"
@@ -203,7 +203,7 @@ export function Dashboard() {
               <div className="flex flex-col">
                 <span
                   className="font-bold uppercase font-sans"
-                  style={{ fontSize: 10, letterSpacing: '.06em', color: 'rgba(255,255,255,.3)' }}
+                  style={{ fontSize: 10, letterSpacing: '.06em', color: 'var(--color-muted)' }}
                 >
                   Расходы · {periodLabel}
                 </span>
@@ -216,14 +216,14 @@ export function Dashboard() {
         {/* Active goals */}
         <div
           className="rounded-3xl mb-[14px] border"
-          style={{ padding: '18px 18px 14px', background: '#161B27', borderColor: 'rgba(255,255,255,.06)' }}
+          style={{ padding: '18px 18px 14px', background: 'var(--color-card)', borderColor: 'var(--color-border)' }}
         >
           <div className="flex items-center justify-between mb-[14px]">
             <span className="font-black text-text" style={{ fontSize: 15 }}>Цели 🎯</span>
             <button
               onClick={() => navigate('/goals')}
               className="font-bold font-sans"
-              style={{ fontSize: 12, color: 'rgba(255,255,255,.3)', background: 'none', border: 'none' }}
+              style={{ fontSize: 12, color: 'var(--color-muted)', background: 'none', border: 'none' }}
             >
               Все →
             </button>
@@ -231,7 +231,7 @@ export function Dashboard() {
           {activeGoals.length === 0 ? (
             <div className="text-center py-4">
               <div style={{ fontSize: 30, marginBottom: 8 }}>🎯</div>
-              <div className="font-sans" style={{ fontSize: 13, color: 'rgba(255,255,255,.3)', marginBottom: 14 }}>
+              <div className="font-sans" style={{ fontSize: 13, color: 'var(--color-muted)', marginBottom: 14 }}>
                 Нет активных целей
               </div>
               <button
@@ -265,14 +265,14 @@ export function Dashboard() {
                   </div>
                   <div
                     className="rounded-full overflow-hidden"
-                    style={{ height: 8, background: 'rgba(255,255,255,.07)' }}
+                    style={{ height: 8, background: 'var(--color-track)' }}
                   >
                     <div
                       className="h-full rounded-full"
                       style={{ width: `${pct}%`, background: goal.color }}
                     />
                   </div>
-                  <div className="font-sans mt-1" style={{ fontSize: 11, color: 'rgba(255,255,255,.28)' }}>
+                  <div className="font-sans mt-1" style={{ fontSize: 11, color: 'var(--color-muted)' }}>
                     {fmt(goal.currentAmount)} из {fmt(goal.targetAmount)}
                   </div>
                 </div>
@@ -284,14 +284,14 @@ export function Dashboard() {
         {/* Recent transactions */}
         <div
           className="rounded-3xl mb-[14px] border"
-          style={{ padding: '18px 18px 14px', background: '#161B27', borderColor: 'rgba(255,255,255,.06)' }}
+          style={{ padding: '18px 18px 14px', background: 'var(--color-card)', borderColor: 'var(--color-border)' }}
         >
           <div className="flex items-center justify-between mb-[14px]">
             <span className="font-black text-text" style={{ fontSize: 15 }}>Операции</span>
             <button
               onClick={() => navigate('/transactions')}
               className="font-bold font-sans"
-              style={{ fontSize: 12, color: 'rgba(255,255,255,.3)', background: 'none', border: 'none' }}
+              style={{ fontSize: 12, color: 'var(--color-muted)', background: 'none', border: 'none' }}
             >
               Все →
             </button>
@@ -300,7 +300,7 @@ export function Dashboard() {
           {recentTxs.length === 0 ? (
             <div
               className="text-center font-sans py-2.5"
-              style={{ fontSize: 13, color: 'rgba(255,255,255,.25)' }}
+              style={{ fontSize: 13, color: 'var(--color-muted)' }}
             >
               📭 Нет операций за период
             </div>
@@ -312,26 +312,26 @@ export function Dashboard() {
                 className="flex items-center justify-between w-full text-left"
                 style={{
                   padding: '10px 0',
-                  borderTop: i > 0 ? '1px solid rgba(255,255,255,.05)' : 'none',
+                  borderTop: i > 0 ? '1px solid var(--color-border)' : 'none',
                 }}
               >
                 <div className="flex items-center" style={{ gap: 11 }}>
                   <div
                     className="flex items-center justify-center flex-shrink-0"
-                    style={{ width: 38, height: 38, borderRadius: 12, background: 'rgba(255,255,255,.06)', fontSize: 17 }}
+                    style={{ width: 38, height: 38, borderRadius: 12, background: 'var(--color-card2)', fontSize: 17 }}
                   >
                     {tx.categoryEmoji}
                   </div>
                   <div className="flex flex-col">
                     <span className="font-extrabold text-text" style={{ fontSize: 13 }}>{tx.category}</span>
-                    <span className="font-sans" style={{ fontSize: 11, color: 'rgba(255,255,255,.28)' }}>
+                    <span className="font-sans" style={{ fontSize: 11, color: 'var(--color-muted)' }}>
                       {fmtDateGroup(tx.date)}
                     </span>
                   </div>
                 </div>
                 <span
                   className="font-black"
-                  style={{ fontSize: 14, color: tx.type === 'INCOME' ? '#4ADE80' : '#F97316' }}
+                  style={{ fontSize: 14, color: tx.type === 'INCOME' ? 'var(--color-green)' : 'var(--color-coral)' }}
                 >
                   {tx.type === 'INCOME' ? '+' : '−'}{fmt(tx.amount)}
                 </span>

@@ -59,14 +59,14 @@ export function LevelProgress() {
               Твой уровень
             </div>
             <div className="font-black text-text text-base">{levelName(currentLevel)}</div>
-            <div className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,.35)' }}>
+            <div className="text-xs mt-0.5 text-muted">
               {totalEarned} XP заработано всего
             </div>
           </div>
         </div>
 
         {/* Level list */}
-        <div className="rounded-2xl overflow-hidden border" style={{ borderColor: 'rgba(255,255,255,.06)', background: '#161B27' }}>
+        <div className="rounded-2xl overflow-hidden border" style={{ borderColor: 'var(--color-border)', background: 'var(--color-card)' }}>
           {LEVELS.map((lvl) => {
             const isCurrentLevel = lvl.level === currentLevel
             const isUnlocked = lvl.level < currentLevel
@@ -92,8 +92,8 @@ export function LevelProgress() {
                         ? 'rgba(74,222,128,.2)'
                         : isCurrentLevel
                           ? 'linear-gradient(135deg, #4ADE80, #15803D)'
-                          : 'rgba(255,255,255,.06)',
-                      color: isUnlocked ? '#4ADE80' : isCurrentLevel ? '#052e16' : 'rgba(255,255,255,.3)',
+                          : 'var(--color-card2)',
+                      color: isUnlocked ? '#4ADE80' : isCurrentLevel ? '#052e16' : 'var(--color-muted)',
                       fontSize: 14,
                     }}
                   >
@@ -120,7 +120,7 @@ export function LevelProgress() {
                     </div>
 
                     {/* XP threshold label */}
-                    <div className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,.3)' }}>
+                    <div className="text-xs mt-0.5 text-muted">
                       {lvl.totalToReach === 0 ? 'Начальный уровень' : `от ${lvl.totalToReach.toLocaleString('ru-RU')} XP`}
                     </div>
 
@@ -129,7 +129,7 @@ export function LevelProgress() {
                       <div className="mt-2">
                         <div
                           className="rounded-full overflow-hidden"
-                          style={{ height: 5, background: 'rgba(255,255,255,.08)' }}
+                          style={{ height: 5, background: 'var(--color-track)' }}
                         >
                           <div
                             className="h-full rounded-full"
@@ -141,7 +141,7 @@ export function LevelProgress() {
                         </div>
                         <div className="flex justify-between mt-1">
                           <span className="text-xs text-green font-bold">{user.xp} XP</span>
-                          <span className="text-xs" style={{ color: 'rgba(255,255,255,.3)' }}>
+                          <span className="text-xs text-muted">
                             {user.xpToNext} XP до ур. {currentLevel + 1}
                           </span>
                         </div>
@@ -153,7 +153,7 @@ export function LevelProgress() {
                   {!isCurrentLevel && (
                     <span
                       className="text-xs font-bold flex-shrink-0"
-                      style={{ color: isLocked ? 'rgba(255,255,255,.2)' : 'rgba(74,222,128,.5)' }}
+                      style={{ color: isLocked ? 'var(--color-muted)' : 'rgba(74,222,128,.5)' }}
                     >
                       Ур. {lvl.level}
                     </span>
@@ -165,7 +165,7 @@ export function LevelProgress() {
         </div>
 
         {/* XP earning tips */}
-        <div className="rounded-2xl border p-4" style={{ borderColor: 'rgba(255,255,255,.06)', background: '#161B27' }}>
+        <div className="rounded-2xl border p-4" style={{ borderColor: 'var(--color-border)', background: 'var(--color-card)' }}>
           <div className="font-bold text-sm mb-3">Как зарабатывать XP</div>
           <div className="space-y-2">
             {[
@@ -180,7 +180,7 @@ export function LevelProgress() {
               <div key={item.label} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span style={{ fontSize: 15 }}>{item.emoji}</span>
-                  <span className="text-sm" style={{ color: 'rgba(255,255,255,.6)' }}>{item.label}</span>
+                  <span className="text-sm text-muted">{item.label}</span>
                 </div>
                 <span className="text-xs font-bold text-yellow">{item.xp}</span>
               </div>
