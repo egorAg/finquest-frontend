@@ -2,9 +2,15 @@ import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../store'
 import { getChallenges, getLeaderboard } from '../api'
-import { Card } from '../components/ui/Card'
 import { XpBar } from '../components/ui/XpBar'
 import { PageHeader } from '../components/layout/PageHeader'
+
+// card wrapper style shared in this page
+const CARD_STYLE = {
+  background: '#161B27',
+  borderColor: 'rgba(255,255,255,.06)',
+  padding: '18px 18px 14px',
+}
 
 export function Game() {
   const navigate = useNavigate()
@@ -25,66 +31,107 @@ export function Game() {
   return (
     <div>
       <PageHeader title="Игра" />
-      <div className="px-[18px] space-y-[14px]">
+      <div className="px-[18px] pt-4 space-y-[14px]">
+
         {/* XP card */}
         {user && (
           <XpBar xp={user.xp} xpToNext={user.xpToNext} level={user.level} streakDays={user.streakDays} />
         )}
 
-        {/* Active challenges */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="font-display font-bold">Челленджи</h2>
-            <button onClick={() => navigate('/challenges')} className="text-xs text-muted">Все →</button>
+        {/* Challenges */}
+        <div className="rounded-3xl border" style={CARD_STYLE}>
+          <div className="flex items-center justify-between mb-[14px]">
+            <span className="font-black text-text" style={{ fontSize: 15 }}>Челленджи 🔥</span>
+            <button
+              onClick={() => navigate('/challenges')}
+              className="font-bold font-sans"
+              style={{ fontSize: 12, color: 'rgba(255,255,255,.3)', background: 'none', border: 'none' }}
+            >
+              Все →
+            </button>
           </div>
-          <div className="space-y-2">
-            {active.map((ch) => {
+
+          {active.length === 0 ? (
+            <div className="text-center py-2 font-sans" style={{ fontSize: 13, color: 'rgba(255,255,255,.25)' }}>
+              Нет активных челленджей
+            </div>
+          ) : (
+            active.map((ch) => {
               const pct = Math.min((ch.currentValue / ch.targetValue) * 100, 100)
+              const daysLeft = Math.max(0, Math.floor((new Date(ch.deadline).getTime() - Date.now()) / 86400000))
               return (
-                <Card key={ch.id}>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl">{ch.emoji}</span>
-                      <div>
-                        <div className="font-bold text-sm">{ch.title}</div>
-                        <div className="text-xs text-muted">{ch.description}</div>
-                      </div>
+                <div
+                  key={ch.id}
+                  className="flex items-center gap-3 rounded-2xl mb-[10px] last:mb-0 border"
+                  style={{
+                    padding: '13px 14px',
+                    background: 'rgba(255,255,255,.04)',
+                    borderColor: 'rgba(255,255,255,.05)',
+                  }}
+                >
+                  <span className="flex-shrink-0" style={{ fontSize: 24 }}>{ch.emoji}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-extrabold text-text mb-1" style={{ fontSize: 13 }}>{ch.title}</div>
+                    <div className="flex justify-between mb-[5px]">
+                      <span className="font-sans truncate pr-2" style={{ fontSize: 11, color: 'rgba(255,255,255,.3)' }}>
+                        {ch.description}
+                      </span>
+                      <span className="font-extrabold text-yellow flex-shrink-0" style={{ fontSize: 11 }}>
+                        {Math.round(pct)}%
+                      </span>
                     </div>
-                    <span className="text-xs font-bold text-yellow">+{ch.xpReward} XP</span>
+                    <div className="rounded-full overflow-hidden" style={{ height: 6, background: 'rgba(255,255,255,.07)' }}>
+                      <div className="h-full rounded-full bg-yellow" style={{ width: `${pct}%` }} />
+                    </div>
                   </div>
-                  <div className="h-1.5 bg-card2 rounded-full overflow-hidden">
-                    <div className="h-full bg-yellow rounded-full transition-all" style={{ width: `${pct}%` }} />
+                  <div className="flex flex-col items-end flex-shrink-0" style={{ gap: 2 }}>
+                    <span className="font-black text-yellow" style={{ fontSize: 13 }}>+{ch.xpReward} XP</span>
+                    <span className="font-sans" style={{ fontSize: 10, color: 'rgba(255,255,255,.3)' }}>{daysLeft} дн.</span>
                   </div>
-                  <div className="text-right text-xs text-muted mt-1">{Math.round(pct)}%</div>
-                </Card>
+                </div>
               )
-            })}
-          </div>
+            })
+          )}
         </div>
 
         {/* Leaderboard preview */}
-        {leaderboard.length > 0 && (
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="font-display font-bold">Рейтинг</h2>
-              <button onClick={() => navigate('/leaderboard')} className="text-xs text-muted">Все →</button>
-            </div>
-            <Card className="p-0 overflow-hidden">
-              {leaderboard.map((entry, i) => (
-                <div key={entry.user.id} className="flex items-center gap-3 px-4 py-3 border-b border-border last:border-0">
-                  <span className="text-lg w-6 text-center font-bold text-muted">
-                    {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : entry.rank}
-                  </span>
-                  <span className="text-xl">{entry.user.avatarEmoji}</span>
-                  <span className="flex-1 font-bold text-sm">{entry.user.firstName}</span>
-                  <span className="text-xs text-yellow font-bold">{entry.xp} XP</span>
-                </div>
-              ))}
-            </Card>
+        <div className="rounded-3xl border" style={CARD_STYLE}>
+          <div className="flex items-center justify-between mb-[14px]">
+            <span className="font-black text-text" style={{ fontSize: 15 }}>Рейтинг 🏆</span>
+            <button
+              onClick={() => navigate('/leaderboard')}
+              className="font-bold font-sans"
+              style={{ fontSize: 12, color: 'rgba(255,255,255,.3)', background: 'none', border: 'none' }}
+            >
+              Все →
+            </button>
           </div>
-        )}
 
-        <div className="h-4" />
+          {leaderboard.length === 0 ? (
+            <div className="text-center py-2 font-sans" style={{ fontSize: 13, color: 'rgba(255,255,255,.25)' }}>
+              Нет данных
+            </div>
+          ) : (
+            leaderboard.map((entry, i) => (
+              <div
+                key={entry.user.id}
+                className="flex items-center mb-[10px] last:mb-0 rounded-2xl"
+                style={{
+                  gap: 12, padding: '10px 12px',
+                  background: 'rgba(255,255,255,.04)',
+                }}
+              >
+                <span className="font-black w-6 text-center flex-shrink-0" style={{ fontSize: 16 }}>
+                  {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${entry.rank}`}
+                </span>
+                <span className="flex-shrink-0" style={{ fontSize: 20 }}>{entry.user.avatarEmoji}</span>
+                <span className="flex-1 font-extrabold text-text" style={{ fontSize: 13 }}>{entry.user.firstName}</span>
+                <span className="font-black text-yellow flex-shrink-0" style={{ fontSize: 13 }}>{entry.xp} XP</span>
+              </div>
+            ))
+          )}
+        </div>
+
       </div>
     </div>
   )
