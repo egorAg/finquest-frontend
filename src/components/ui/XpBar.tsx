@@ -6,14 +6,16 @@ interface XpBarProps {
   level: number
   streakDays?: number
   className?: string
+  onClick?: () => void
 }
 
-export function XpBar({ xp, xpToNext, level, streakDays = 0, className }: XpBarProps) {
+export function XpBar({ xp, xpToNext, level, streakDays = 0, className, onClick }: XpBarProps) {
   const pct = xpToNext > 0 ? Math.min((xp % xpToNext) / xpToNext * 100, 100) : 0
 
   return (
     <div
-      className={`relative overflow-hidden rounded-3xl border ${className ?? ''}`}
+      onClick={onClick}
+      className={`relative overflow-hidden rounded-3xl border ${className ?? ''}${onClick ? ' cursor-pointer active:opacity-80' : ''}`}
       style={{
         padding: '18px 20px 16px',
         background: 'linear-gradient(135deg, #1B3A2D 0%, #0F2218 100%)',

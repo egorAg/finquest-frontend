@@ -118,6 +118,7 @@ export function Dashboard() {
           level={user.level}
           streakDays={user.streakDays}
           className="mb-[14px]"
+          onClick={() => navigate('/level-progress')}
         />
 
         {/* Balance Card */}
