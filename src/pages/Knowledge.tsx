@@ -26,14 +26,14 @@ export function Knowledge() {
   return (
     <div>
       <PageHeader title="База знаний" />
-      <div className="px-[18px] space-y-[14px]">
+      <div className="px-[18px] pt-4 space-y-[14px]">
         {/* Category pills */}
         <div className="flex gap-2 overflow-x-auto pb-1">
           {CATEGORIES.map((c) => (
             <button
               key={c.id}
               onClick={() => setCat(c.id)}
-              className={`px-3 py-1.5 rounded-full text-sm font-bold whitespace-nowrap transition-all ${
+              className={`px-3 py-1.5 rounded-full text-sm font-bold whitespace-nowrap transition-all flex-shrink-0 ${
                 cat === c.id
                   ? 'bg-blue/20 text-blue border border-blue/30'
                   : 'bg-card2 text-muted'
@@ -45,19 +45,22 @@ export function Knowledge() {
         </div>
 
         {/* Articles */}
-        <div className="space-y-2">
+        <div className="space-y-[10px]">
           {articles.map((a) => (
             <Card
               key={a.id}
-              className="cursor-pointer flex items-center gap-3"
+              className="cursor-pointer flex items-center"
+              style={{ gap: 14, padding: '14px 16px' }}
               onClick={() => navigate(`/knowledge/${a.id}`)}
             >
-              <span className="text-3xl">{a.emoji}</span>
+              <span className="flex-shrink-0" style={{ fontSize: 28 }}>{a.emoji}</span>
               <div className="flex-1 min-w-0">
-                <div className="font-bold text-sm leading-tight">{a.title}</div>
-                <div className="text-xs text-muted mt-0.5">{a.readTime} мин · +{a.xpReward} XP</div>
+                <div className="font-extrabold text-text leading-tight" style={{ fontSize: 13 }}>{a.title}</div>
+                <div className="font-sans mt-1" style={{ fontSize: 11, color: 'rgba(255,255,255,.28)' }}>
+                  {a.readTime} мин · +{a.xpReward} XP
+                </div>
               </div>
-              <span className="text-muted text-lg">›</span>
+              <span className="text-muted flex-shrink-0" style={{ fontSize: 18 }}>›</span>
             </Card>
           ))}
         </div>

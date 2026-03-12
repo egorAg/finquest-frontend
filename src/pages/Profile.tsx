@@ -14,20 +14,20 @@ export function Profile() {
       <PageHeader title="Профиль" right={
         <button onClick={() => navigate('/settings')} className="text-xl">⚙️</button>
       } />
-      <div className="px-[18px] space-y-[14px]">
+      <div className="px-[18px] pt-4 space-y-[14px]">
         <Card className="text-center py-6">
-          <div className="text-5xl mb-2">{user.avatarEmoji}</div>
+          <div className="text-5xl mb-2">{user.avatarEmoji ?? '👤'}</div>
           <div className="font-display font-bold text-xl">{user.firstName} {user.lastName}</div>
           {user.username && <div className="text-sm text-muted">@{user.username}</div>}
-          <div className="mt-3 text-sm text-muted">🔥 Серия {user.streakDays} дней</div>
+          <div className="mt-3 text-sm text-muted">🔥 Серия {user.streakDays ?? 0} дней</div>
         </Card>
 
-        <XpBar xp={user.xp} xpToNext={user.xpToNext} level={user.level} streakDays={user.streakDays} />
+        <XpBar xp={user.xp ?? 0} xpToNext={user.xpToNext ?? 200} level={user.level ?? 1} streakDays={user.streakDays ?? 0} />
 
         <div className="grid grid-cols-2 gap-3">
           <Card className="text-center cursor-pointer" onClick={() => navigate('/achievements')}>
             <div className="text-2xl mb-1">🏆</div>
-            <div className="font-bold">{user.achievements.length}</div>
+            <div className="font-bold">{user.achievements?.length ?? 0}</div>
             <div className="text-xs text-muted">Достижений</div>
           </Card>
           <Card className="text-center cursor-pointer" onClick={() => navigate('/notifications')}>

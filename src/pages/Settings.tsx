@@ -25,7 +25,7 @@ export function Settings() {
   return (
     <div>
       <PageHeader title="Настройки" back />
-      <div className="px-[18px] space-y-[14px]">
+      <div className="px-[18px] pt-4 space-y-[14px]">
         {/* Profile */}
         <Card className="flex items-center gap-3">
           <div className="text-4xl">{user.avatarEmoji}</div>

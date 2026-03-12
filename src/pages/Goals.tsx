@@ -46,7 +46,7 @@ export function Goals() {
           <button onClick={() => setShowAdd(true)} className="text-green text-xl font-bold">+</button>
         }
       />
-      <div className="px-[18px] space-y-[14px]">
+      <div className="px-[18px] pt-4 space-y-[14px]">
         {/* Tabs */}
         <div className="flex bg-card2 rounded-2xl p-1 gap-1">
           {(['active', 'archived'] as const).map((t) => (

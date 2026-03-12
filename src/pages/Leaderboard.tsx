@@ -20,7 +20,7 @@ export function Leaderboard() {
   return (
     <div>
       <PageHeader title="Рейтинг" back />
-      <div className="px-4 space-y-4">
+      <div className="px-[18px] pt-4 space-y-[14px]">
         {/* Season picker */}
         <div className="flex items-center justify-between">
           <button

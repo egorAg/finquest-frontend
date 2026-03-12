@@ -29,7 +29,7 @@ export function Notifications() {
           <button onClick={() => readAll()} className="text-xs text-blue">Всё прочитано</button>
         ) : undefined}
       />
-      <div className="px-[18px] space-y-[10px]">
+      <div className="px-[18px] pt-4 space-y-[10px]">
         {notifications.length === 0 ? (
           <Card className="text-center py-8 text-muted">
             <div className="text-3xl mb-2">🔔</div>

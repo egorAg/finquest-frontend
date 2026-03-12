@@ -9,7 +9,7 @@ interface XpBarProps {
 }
 
 export function XpBar({ xp, xpToNext, level, streakDays = 0, className }: XpBarProps) {
-  const pct = Math.min((xp / xpToNext) * 100, 100)
+  const pct = xpToNext > 0 ? Math.min((xp % xpToNext) / xpToNext * 100, 100) : 0
 
   return (
     <div

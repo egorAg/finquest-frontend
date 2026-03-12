@@ -42,6 +42,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'finquest-store',
+      version: 2,
       partialize: (s) => ({
         token: s.token,
         user: s.user,
