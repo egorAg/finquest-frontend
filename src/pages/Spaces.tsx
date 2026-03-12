@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../store'
-import { getSpaces, createSpace } from '../api'
+import { getSpaces, createSpace, createSpaceInvite, joinSpaceByToken } from '../api'
 import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
 import { PageHeader } from '../components/layout/PageHeader'
@@ -24,6 +24,36 @@ export function Spaces() {
   const { data: spaces = [] } = useQuery({
     queryKey: ['spaces'],
     queryFn: getSpaces,
+  })
+
+  // Auto-join if opened via invite deep link
+  useEffect(() => {
+    const startParam = (window as any).Telegram?.WebApp?.initDataUnsafe?.start_param as string | undefined
+    if (startParam?.startsWith('invite_')) {
+      const token = startParam.replace('invite_', '')
+      joinByToken(token)
+    }
+  }, [])
+
+  const { mutate: joinByToken } = useMutation({
+    mutationFn: joinSpaceByToken,
+    onSuccess: (space) => {
+      if (space) {
+        qc.invalidateQueries({ queryKey: ['spaces'] })
+        setActiveSpaceId(space.id)
+        navigate(-1)
+      }
+    },
+  })
+
+  const { mutate: doInvite } = useMutation({
+    mutationFn: (spaceId: string) => createSpaceInvite(spaceId),
+    onSuccess: (data) => {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(data.inviteUrl).catch(() => {})
+      }
+      alert(`Ссылка скопирована!\n\n${data.inviteUrl}`)
+    },
   })
 
   const { mutate: doCreate, isPending } = useMutation({
@@ -63,9 +93,17 @@ export function Spaces() {
               <div className="font-bold">{space.name}</div>
               <div className="text-xs text-muted">{typeLabels[space.type]}</div>
             </div>
-            {activeSpaceId === space.id && (
-              <div className="text-green font-bold text-lg">✓</div>
-            )}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={(e) => { e.stopPropagation(); doInvite(space.id) }}
+                className="text-xs text-muted bg-card2 rounded-xl px-3 py-1.5 font-bold"
+              >
+                Invite
+              </button>
+              {activeSpaceId === space.id && (
+                <div className="text-green font-bold text-lg">✓</div>
+              )}
+            </div>
           </Card>
         ))}
 

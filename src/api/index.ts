@@ -29,6 +29,12 @@ export const createSpace = (data: { name: string; emoji: string; type: Space['ty
 export const addSpaceMember = (spaceId: string, telegramUsername: string) =>
   apiClient.post<Space>(`/spaces/${spaceId}/members`, { telegramUsername }).then((r) => r.data)
 
+export const createSpaceInvite = (spaceId: string) =>
+  apiClient.post<{ token: string; expiresAt: string; inviteUrl: string }>(`/spaces/${spaceId}/invite`).then((r) => r.data)
+
+export const joinSpaceByToken = (token: string) =>
+  apiClient.post<Space>(`/spaces/join/${token}`).then((r) => r.data)
+
 // ─── Transactions ─────────────────────────────────────────────────────────────
 
 export const getTransactions = (params?: { spaceId?: string; month?: string; type?: string; limit?: number; offset?: number }) =>
