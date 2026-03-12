@@ -33,6 +33,14 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
 }
 
+/* XP card theming defaults (dark) */
+:root {
+  --xp-bg:     linear-gradient(135deg, #1B3A2D 0%, #0F2218 100%);
+  --xp-border: rgba(74,222,128,0.18);
+  --xp-muted:  rgba(255,255,255,0.3);
+  --xp-track:  rgba(255,255,255,0.08);
+}
+
 /* Light theme overrides */
 [data-theme="light"] {
   --color-bg:     #F0F4FF;
@@ -43,6 +51,11 @@
   --color-text:   #0F172A;
   --color-muted:  rgba(15,23,42,0.45);
   --color-track:  rgba(0,0,0,0.08);
+
+  --xp-bg:        linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%);
+  --xp-border:    rgba(74,222,128,0.35);
+  --xp-muted:     rgba(21,128,61,0.55);
+  --xp-track:     rgba(21,128,61,0.15);
 }
 
 body {

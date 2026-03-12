@@ -18,8 +18,8 @@ export function XpBar({ xp, xpToNext, level, streakDays = 0, className, onClick 
       className={`relative overflow-hidden rounded-3xl border ${className ?? ''}${onClick ? ' cursor-pointer active:opacity-80' : ''}`}
       style={{
         padding: '18px 20px 16px',
-        background: 'linear-gradient(135deg, #1B3A2D 0%, #0F2218 100%)',
-        borderColor: 'rgba(74,222,128,.18)',
+        background: 'var(--xp-bg)',
+        borderColor: 'var(--xp-border)',
       }}
     >
       {/* Ambient glow */}
@@ -74,7 +74,7 @@ export function XpBar({ xp, xpToNext, level, streakDays = 0, className, onClick 
       {/* XP bar labels */}
       <div className="flex justify-between mb-1.5 relative">
         <span className="font-extrabold text-green" style={{ fontSize: 13 }}>{xp} XP</span>
-        <span className="font-semibold font-sans" style={{ fontSize: 11, color: 'rgba(255,255,255,.3)' }}>
+        <span className="font-semibold font-sans" style={{ fontSize: 11, color: 'var(--xp-muted)' }}>
           до ур. {level + 1} → {xpToNext} XP
         </span>
       </div>
@@ -82,7 +82,7 @@ export function XpBar({ xp, xpToNext, level, streakDays = 0, className, onClick 
       {/* XP bar */}
       <div
         className="rounded-full overflow-hidden relative"
-        style={{ height: 10, background: 'rgba(255,255,255,.08)' }}
+        style={{ height: 10, background: 'var(--xp-track)' }}
       >
         <div
           className="h-full rounded-full relative overflow-hidden"
