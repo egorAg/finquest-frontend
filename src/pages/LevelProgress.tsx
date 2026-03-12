@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../store'
 import { PageHeader } from '../components/layout/PageHeader'
 import { levelName } from '../lib/utils'
@@ -23,7 +22,6 @@ const LEVELS = Array.from({ length: 10 }, (_, i) => {
 })
 
 export function LevelProgress() {
-  const navigate = useNavigate()
   const { user } = useAppStore()
 
   if (!user) return null
@@ -69,7 +67,7 @@ export function LevelProgress() {
 
         {/* Level list */}
         <div className="rounded-2xl overflow-hidden border" style={{ borderColor: 'rgba(255,255,255,.06)', background: '#161B27' }}>
-          {LEVELS.map((lvl, i) => {
+          {LEVELS.map((lvl) => {
             const isCurrentLevel = lvl.level === currentLevel
             const isUnlocked = lvl.level < currentLevel
             const isLocked = lvl.level > currentLevel
