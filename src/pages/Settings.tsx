@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../store'
 import { updateMe } from '../api'
 import { Card } from '../components/ui/Card'
 import { PageHeader } from '../components/layout/PageHeader'
 
 export function Settings() {
+  const navigate = useNavigate()
   const { user, setUser } = useAppStore()
 
   // Local state for optimistic toggle feedback
@@ -130,14 +132,14 @@ export function Settings() {
               emoji="🔒"
               label="Политика конфиденциальности"
               description="Как мы храним ваши данные"
-              onClick={() => window.open('mailto:egor.ageev.work@yandex.ru?subject=Политика конфиденциальности', '_blank')}
+              onClick={() => navigate('/privacy')}
             />
             <div className="flex items-center justify-between px-4 py-3">
               <div className="flex items-center gap-3">
                 <span className="text-xl">💰</span>
                 <div>
                   <div className="font-bold text-sm">FinQuest</div>
-                  <div className="text-xs text-muted">v1.0.0 · Дипломный проект</div>
+                  <div className="text-xs text-muted">Beta 1.0</div>
                 </div>
               </div>
             </div>

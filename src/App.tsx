@@ -22,6 +22,7 @@ import { CreateGoal } from './pages/CreateGoal'
 import { ContributeGoal } from './pages/ContributeGoal'
 import { ChooseAvatar } from './pages/ChooseAvatar'
 import { ManageSpaces } from './pages/ManageSpaces'
+import { PrivacyPolicy } from './pages/PrivacyPolicy'
 
 const qc = new QueryClient({
   defaultOptions: {
@@ -83,6 +84,7 @@ function AppRoutes() {
       <Route path="goals/:id/contribute" element={<ContributeGoal />} />
       <Route path="profile/avatar" element={<ChooseAvatar />} />
       <Route path="profile/spaces" element={<ManageSpaces />} />
+      <Route path="privacy" element={<PrivacyPolicy />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
