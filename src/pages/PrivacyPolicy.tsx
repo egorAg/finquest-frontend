@@ -1,3 +1,4 @@
+import React from 'react'
 import { PageHeader } from '../components/layout/PageHeader'
 
 export function PrivacyPolicy() {
@@ -65,7 +66,7 @@ export function PrivacyPolicy() {
   )
 }
 
-function Section({ title, children }: { title: string; children: string }) {
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
       <div className="font-bold text-sm mb-1.5">{title}</div>
