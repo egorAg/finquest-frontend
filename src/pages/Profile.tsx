@@ -76,7 +76,11 @@ export function Profile() {
       {showPicker && (
         <div className="fixed inset-0 z-50 flex flex-col justify-end">
           <div className="absolute inset-0 bg-black/60" onClick={() => setShowPicker(false)} />
-          <div className="relative rounded-t-3xl p-5" style={{ background: '#161B27' }}>
+          <div
+            className="relative rounded-t-3xl p-5"
+            style={{ background: '#161B27' }}
+            onTouchMove={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between mb-4">
               <span className="font-bold text-sm">Выбери аватарку</span>
               <button
@@ -87,7 +91,10 @@ export function Profile() {
                 ✕
               </button>
             </div>
-            <div className="grid grid-cols-8 gap-2 overflow-y-auto" style={{ maxHeight: '45vh' }}>
+            <div
+            className="grid grid-cols-8 gap-2"
+            style={{ maxHeight: '45vh', overflowY: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}
+          >
               {AVATAR_EMOJIS.map((emoji) => (
                 <button
                   key={emoji}
