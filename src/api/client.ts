@@ -11,12 +11,14 @@ apiClient.interceptors.request.use((config) => {
   return config
 })
 
-// On 401 — clear token and reload to trigger re-auth
+// On 401 — clear token and reload to trigger re-auth (skip auth endpoint itself)
 apiClient.interceptors.response.use(
   (r) => r,
   (err) => {
-    if (err.response?.status === 401) {
+    const isAuthEndpoint = err.config?.url?.includes('/auth/')
+    if (err.response?.status === 401 && !isAuthEndpoint) {
       localStorage.removeItem('fq_token')
+      localStorage.removeItem('finquest-store')
       window.location.reload()
     }
     return Promise.reject(err)
