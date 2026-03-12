@@ -160,6 +160,22 @@ export function Finances() {
               </Card>
             </div>
 
+            {/* Saved card */}
+            {data.prevMonth.expense > 0 && data.expense < data.prevMonth.expense && (
+              <Card className="border border-green/30 bg-green/5">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-lg">🎉</span>
+                  <span className="text-xs text-muted">Сэкономил</span>
+                </div>
+                <div className="font-bold text-lg text-green">
+                  {fmt(data.prevMonth.expense - data.expense)}
+                </div>
+                <div className="text-xs text-muted mt-1">
+                  по сравнению с прошлым месяцем
+                </div>
+              </Card>
+            )}
+
             {/* Insight cards */}
             <InsightCards data={data} fmt={fmt} spaces={spaces} activeSpaceId={activeSpaceId} />
 
@@ -178,6 +194,11 @@ export function Finances() {
                 </div>
                 <DayChart days={data.byDay} />
               </Card>
+            )}
+
+            {/* Heatmap */}
+            {data.byDay && data.byDay.length > 0 && (
+              <HeatMap days={data.byDay} month={month} />
             )}
 
             {/* Top categories bar chart */}
@@ -394,6 +415,110 @@ function PatternCards({ data, fmt }: {
           </div>
         </Card>
       )}
+
+      {/* Savings streak */}
+      {data.savingsStreak !== null && data.savingsStreak > 0 && (
+        <Card className="border border-orange-400/30 bg-orange-400/5">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-lg">🔥</span>
+            <span className="text-xs text-muted">Стрик экономии</span>
+          </div>
+          <div className="font-bold text-lg text-orange-400">
+            {data.savingsStreak} {pluralize(data.savingsStreak, 'день', 'дня', 'дней')} подряд
+          </div>
+          <div className="text-xs text-muted mt-1">
+            {data.monthlyBudget
+              ? `в рамках бюджета ~${fmt(Math.round(data.monthlyBudget / data.daysInMonth))}/день`
+              : 'расходы ниже среднего за прошлый месяц'}
+          </div>
+        </Card>
+      )}
     </>
+  )
+}
+
+const DOW_LABELS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
+
+function HeatMap({ days, month }: { days: DayData[]; month: string }) {
+  const fmt = useFmt()
+  const [year, mon] = month.split('-').map(Number)
+  const daysInMonth = new Date(year, mon, 0).getDate()
+
+  // Build expense map: day number -> expense
+  const expenseMap = new Map<number, number>()
+  for (const d of days) {
+    const dayNum = new Date(d.date).getDate()
+    expenseMap.set(dayNum, d.expense)
+  }
+
+  const maxExpense = Math.max(...days.map((d) => d.expense), 1)
+
+  // Build calendar grid — 0=Mon..6=Sun
+  const firstDow = ((new Date(year, mon - 1, 1).getDay() + 6) % 7)
+  const cells: (number | null)[] = []
+  for (let i = 0; i < firstDow; i++) cells.push(null)
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d)
+  while (cells.length % 7 !== 0) cells.push(null)
+
+  const weeks: (number | null)[][] = []
+  for (let i = 0; i < cells.length; i += 7) {
+    weeks.push(cells.slice(i, i + 7))
+  }
+
+  return (
+    <Card>
+      <h3 className="font-bold text-sm mb-3">🗓 Тепловая карта расходов</h3>
+      {/* DOW headers */}
+      <div className="grid grid-cols-7 gap-1 mb-1">
+        {DOW_LABELS.map((l) => (
+          <div key={l} className="text-[10px] text-muted text-center">{l}</div>
+        ))}
+      </div>
+      {/* Weeks */}
+      <div className="space-y-1">
+        {weeks.map((week, wi) => (
+          <div key={wi} className="grid grid-cols-7 gap-1">
+            {week.map((day, di) => {
+              if (day === null) return <div key={di} />
+              const exp = expenseMap.get(day) ?? 0
+              const intensity = exp > 0 ? Math.max(0.15, exp / maxExpense) : 0
+              const today = new Date()
+              const isToday = today.getFullYear() === year && today.getMonth() + 1 === mon && today.getDate() === day
+              return (
+                <div
+                  key={di}
+                  className={cn(
+                    'aspect-square rounded-md flex items-center justify-center text-[10px] relative',
+                    isToday && 'ring-1 ring-white/50'
+                  )}
+                  style={{
+                    backgroundColor: intensity > 0
+                      ? `rgba(249, 115, 22, ${intensity})`
+                      : 'rgba(255,255,255,0.04)',
+                  }}
+                  title={exp > 0 ? `${day}: ${fmt(exp)}` : undefined}
+                >
+                  <span className={cn('text-[10px]', intensity > 0.5 ? 'text-white' : 'text-muted')}>
+                    {day}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        ))}
+      </div>
+      {/* Legend */}
+      <div className="flex items-center justify-end gap-1.5 mt-2">
+        <span className="text-[9px] text-muted">Мало</span>
+        {[0.15, 0.35, 0.55, 0.75, 1].map((op) => (
+          <div
+            key={op}
+            className="w-3 h-3 rounded-sm"
+            style={{ backgroundColor: `rgba(249, 115, 22, ${op})` }}
+          />
+        ))}
+        <span className="text-[9px] text-muted">Много</span>
+      </div>
+    </Card>
   )
 }

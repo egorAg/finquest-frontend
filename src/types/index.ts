@@ -131,6 +131,8 @@ export interface AnalyticsSummary {
   daysElapsed: number
   mostExpensiveDay: { day: string; dayIndex: number; amount: number } | null
   frequentCategory: { category: string; emoji: string; count: number } | null
+  savingsStreak: number | null
+  monthlyBudget: number | null
 }
 
 export interface KnowledgeArticle {
