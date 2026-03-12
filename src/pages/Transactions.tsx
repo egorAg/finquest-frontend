@@ -2,14 +2,17 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAppStore } from '../store'
-import { getTransactions, deleteTransaction } from '../api'
+import { getTransactions, deleteTransaction, getRecurringTransactions, updateRecurringTransaction, deleteRecurringTransaction } from '../api'
 import { Card } from '../components/ui/Card'
 import { PageHeader } from '../components/layout/PageHeader'
 import { fmtDateGroup, fmtDateTime, currentMonth } from '../lib/utils'
 import { useFmt } from '../hooks/useFmt'
-import type { Transaction } from '../types'
+import type { Transaction, RecurringTransaction } from '../types'
 
 type Filter = 'ALL' | 'EXPENSE' | 'INCOME'
+type Tab = 'transactions' | 'recurring'
+
+const FREQ_LABELS: Record<string, string> = { DAILY: 'Ежедневно', WEEKLY: 'Еженедельно', MONTHLY: 'Ежемесячно' }
 
 // ─── Transaction list ─────────────────────────────────────────────────────────
 
@@ -17,6 +20,7 @@ export function Transactions() {
   const navigate = useNavigate()
   const { activeSpaceId } = useAppStore()
   const fmt = useFmt()
+  const [tab, setTab] = useState<Tab>('transactions')
   const [filter, setFilter] = useState<Filter>('ALL')
   const [month, setMonth] = useState(currentMonth())
 
@@ -47,6 +51,25 @@ export function Transactions() {
     <div>
       <PageHeader title="Операции" back />
       <div className="px-[18px] pt-4 space-y-[14px]">
+        {/* Tab switcher */}
+        <div className="flex bg-card2 rounded-2xl p-1 gap-1">
+          <button
+            onClick={() => setTab('transactions')}
+            className={`flex-1 py-2 rounded-xl font-bold text-sm transition-all ${
+              tab === 'transactions' ? 'bg-green/20 text-green' : 'text-muted'
+            }`}
+          >Операции</button>
+          <button
+            onClick={() => setTab('recurring')}
+            className={`flex-1 py-2 rounded-xl font-bold text-sm transition-all ${
+              tab === 'recurring' ? 'bg-green/20 text-green' : 'text-muted'
+            }`}
+          >Подписки</button>
+        </div>
+
+        {tab === 'recurring' ? (
+          <RecurringList />
+        ) : (<>
         {/* Month picker */}
         <div className="flex items-center justify-between">
           <button
@@ -134,8 +157,90 @@ export function Transactions() {
           })
         )}
         <div className="h-4" />
+        </>)}
       </div>
     </div>
+  )
+}
+
+// ─── Recurring list ───────────────────────────────────────────────────────────
+
+function RecurringList() {
+  const navigate = useNavigate()
+  const { activeSpaceId } = useAppStore()
+  const fmt = useFmt()
+  const qc = useQueryClient()
+
+  const { data: items = [] } = useQuery({
+    queryKey: ['recurring', activeSpaceId],
+    queryFn: () => getRecurringTransactions(activeSpaceId ?? undefined),
+    enabled: !!activeSpaceId,
+  })
+
+  const toggleMutation = useMutation({
+    mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
+      updateRecurringTransaction(id, { isActive }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['recurring'] }),
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteRecurringTransaction(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['recurring'] }),
+  })
+
+  return (
+    <>
+      {items.length === 0 ? (
+        <Card className="text-center py-8 text-muted">
+          <div className="text-3xl mb-2">🔄</div>
+          <div className="text-sm">Нет подписок</div>
+          <div className="text-xs mt-1">Добавьте повторяющийся платёж</div>
+        </Card>
+      ) : (
+        <div className="space-y-2">
+          {items.map((rec) => (
+            <Card key={rec.id} className={`flex items-center gap-3 ${!rec.isActive ? 'opacity-50' : ''}`}>
+              <div
+                className="flex items-center justify-center flex-shrink-0"
+                style={{ width: 38, height: 38, borderRadius: 12, background: 'var(--color-card2)', fontSize: 18 }}
+              >
+                {rec.categoryEmoji}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-sm">{rec.category}</div>
+                <div className="text-xs text-muted">
+                  {FREQ_LABELS[rec.frequency]} · след. {new Date(rec.nextRunDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}
+                </div>
+              </div>
+              <div className="text-right flex-shrink-0">
+                <div className={`font-bold text-sm ${rec.type === 'INCOME' ? 'text-green' : ''}`}>
+                  {rec.type === 'INCOME' ? '+' : '-'}{fmt(rec.amount)}
+                </div>
+                <div className="flex items-center gap-1.5 mt-1 justify-end">
+                  <button
+                    onClick={() => toggleMutation.mutate({ id: rec.id, isActive: !rec.isActive })}
+                    className={`w-8 h-4.5 rounded-full transition-colors relative ${rec.isActive ? 'bg-green' : 'bg-card2 border border-border'}`}
+                  >
+                    <div className={`w-3.5 h-3.5 rounded-full bg-white absolute top-0.5 transition-all ${rec.isActive ? 'left-4' : 'left-0.5'}`} />
+                  </button>
+                  <button
+                    onClick={() => { if (confirm('Удалить подписку?')) deleteMutation.mutate(rec.id) }}
+                    className="text-red/60 text-xs"
+                  >✕</button>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      <button
+        onClick={() => navigate('/add-recurring')}
+        className="w-full py-3 rounded-2xl border border-dashed border-green/40 text-green font-bold text-sm"
+      >
+        + Новая подписка
+      </button>
+    </>
   )
 }
 

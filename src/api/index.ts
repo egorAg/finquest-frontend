@@ -2,7 +2,7 @@ import { apiClient } from './client'
 import type {
   User, Space, Transaction, Goal, Challenge,
   Achievement, Notification, LeaderboardEntry,
-  AnalyticsSummary, KnowledgeArticle,
+  AnalyticsSummary, KnowledgeArticle, RecurringTransaction,
 } from '../types'
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
@@ -57,6 +57,27 @@ export const createTransaction = (data: {
 
 export const deleteTransaction = (id: string) =>
   apiClient.delete<{ ok: boolean }>(`/transactions/${id}`).then((r) => r.data)
+
+// ─── Recurring Transactions ──────────────────────────────────────────────────
+
+export const getRecurringTransactions = (spaceId?: string) =>
+  apiClient.get<RecurringTransaction[]>('/recurring', { params: spaceId ? { spaceId } : {} }).then((r) => r.data)
+
+export const createRecurringTransaction = (data: {
+  spaceId: string; type: 'EXPENSE' | 'INCOME'; amount: number
+  category: string; categoryEmoji: string; comment?: string
+  frequency: 'DAILY' | 'WEEKLY' | 'MONTHLY'; nextRunDate: string
+}) =>
+  apiClient.post<RecurringTransaction>('/recurring', data).then((r) => r.data)
+
+export const updateRecurringTransaction = (id: string, data: Partial<{
+  amount: number; category: string; categoryEmoji: string; comment: string
+  frequency: string; isActive: boolean; nextRunDate: string
+}>) =>
+  apiClient.patch<RecurringTransaction>(`/recurring/${id}`, data).then((r) => r.data)
+
+export const deleteRecurringTransaction = (id: string) =>
+  apiClient.delete<{ ok: boolean }>(`/recurring/${id}`).then((r) => r.data)
 
 // ─── Goals ────────────────────────────────────────────────────────────────────
 

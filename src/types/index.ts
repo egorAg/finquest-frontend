@@ -135,6 +135,21 @@ export interface AnalyticsSummary {
   monthlyBudget: number | null
 }
 
+export interface RecurringTransaction {
+  id: string
+  spaceId: string
+  userId: string
+  type: 'EXPENSE' | 'INCOME'
+  amount: number
+  category: string
+  categoryEmoji: string
+  comment: string
+  frequency: 'DAILY' | 'WEEKLY' | 'MONTHLY'
+  nextRunDate: string
+  isActive: boolean
+  createdAt: string
+}
+
 export interface KnowledgeArticle {
   id: string
   title: string

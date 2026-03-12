@@ -10,6 +10,7 @@ import { Game } from './pages/Game'
 import { Knowledge } from './pages/Knowledge'
 import { KnowledgeArticle } from './pages/KnowledgeArticle'
 import { AddTransaction } from './pages/AddTransaction'
+import { AddRecurring } from './pages/AddRecurring'
 import { Transactions, TransactionDetail } from './pages/Transactions'
 import { Goals } from './pages/Goals'
 import { Profile } from './pages/Profile'
@@ -82,6 +83,7 @@ function AppRoutes() {
 
       {/* Full-screen pages (no bottom nav) */}
       <Route path="add-transaction" element={<AddTransaction />} />
+      <Route path="add-recurring" element={<AddRecurring />} />
       <Route path="transactions/:id" element={<TransactionDetail />} />
       <Route path="knowledge/:id" element={<KnowledgeArticle />} />
       <Route path="settings" element={<Settings />} />
