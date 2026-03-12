@@ -50,6 +50,17 @@ export function Profile() {
           </Card>
         </div>
 
+        <Card className="cursor-pointer" onClick={() => navigate('/profile/spaces')}>
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">🏠</span>
+            <div className="flex-1">
+              <div className="font-bold text-sm">Мои пространства</div>
+              <div className="text-xs text-muted">Управление, редактирование, удаление</div>
+            </div>
+            <span className="text-muted text-sm">›</span>
+          </div>
+        </Card>
+
         <div className="h-4" />
       </div>
     </div>

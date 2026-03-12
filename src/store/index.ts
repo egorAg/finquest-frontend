@@ -12,7 +12,7 @@ interface AppState {
 
   // Active space
   activeSpaceId: string | null
-  setActiveSpaceId: (id: string) => void
+  setActiveSpaceId: (id: string | null) => void
 
   // Spaces cache
   spaces: Space[]
