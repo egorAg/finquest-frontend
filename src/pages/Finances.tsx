@@ -8,12 +8,6 @@ import { fmt, currentMonth } from '../lib/utils'
 
 type DayData = { date: string; income: number; expense: number }
 
-function fmtShort(n: number) {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
-  if (n >= 1_000) return `${(n / 1_000).toFixed(n >= 10_000 ? 0 : 1)}K`
-  return String(Math.round(n))
-}
-
 function DayChart({ days }: { days: DayData[] }) {
   const [selected, setSelected] = useState<number | null>(null)
   if (!days || days.length === 0) return null
