@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../store'
-import { getSpaces, createSpace, createSpaceInvite, joinSpaceByToken } from '../api'
+import { getSpaces, createSpace, createSpaceInvite, joinSpaceByToken, leaveSpace } from '../api'
 import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
 import { PageHeader } from '../components/layout/PageHeader'
@@ -14,7 +14,7 @@ const SPACE_COLORS = ['#4ADE80', '#38BDF8', '#A78BFA', '#FACC15', '#F97316', '#F
 export function Spaces() {
   const navigate = useNavigate()
   const qc = useQueryClient()
-  const { activeSpaceId, setActiveSpaceId } = useAppStore()
+  const { activeSpaceId, setActiveSpaceId, user } = useAppStore()
   const [showCreate, setShowCreate] = useState(false)
   const [inviteLink, setInviteLink] = useState<string | null>(null)
   const [name, setName] = useState('')
@@ -60,6 +60,17 @@ export function Spaces() {
     },
   })
 
+  const { mutate: doLeave } = useMutation({
+    mutationFn: (spaceId: string) => leaveSpace(spaceId),
+    onSuccess: (_, spaceId) => {
+      qc.invalidateQueries({ queryKey: ['spaces'] })
+      if (activeSpaceId === spaceId) {
+        const remaining = spaces.filter((s) => s.id !== spaceId)
+        setActiveSpaceId(remaining[0]?.id ?? null)
+      }
+    },
+  })
+
   const { mutate: doCreate, isPending } = useMutation({
     mutationFn: () => createSpace({ name, emoji, type, color }),
     onSuccess: (space) => {
@@ -98,14 +109,33 @@ export function Spaces() {
               <div className="text-xs text-muted">{typeLabels[space.type]}</div>
             </div>
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                disabled={isInviting}
-                onClick={(e) => { e.stopPropagation(); doInvite(space.id) }}
-                className="text-xs text-muted bg-card2 rounded-xl px-3 py-1.5 font-bold active:opacity-60 disabled:opacity-40"
-              >
-                {isInviting ? '...' : '🔗'}
-              </button>
+              {space.type !== 'PERSONAL' && (
+                <button
+                  type="button"
+                  disabled={isInviting}
+                  onClick={(e) => { e.stopPropagation(); doInvite(space.id) }}
+                  className="text-xs text-muted bg-card2 rounded-xl px-3 py-1.5 font-bold active:opacity-60 disabled:opacity-40"
+                >
+                  {isInviting ? '...' : '🔗'}
+                </button>
+              )}
+              {space.ownerId !== user?.id && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    const tg = (window as any).Telegram?.WebApp
+                    if (tg?.showConfirm) {
+                      tg.showConfirm(`Выйти из «${space.name}»?`, (ok: boolean) => { if (ok) doLeave(space.id) })
+                    } else {
+                      if (confirm(`Выйти из «${space.name}»?`)) doLeave(space.id)
+                    }
+                  }}
+                  className="text-xs text-red bg-red/10 rounded-xl px-3 py-1.5 font-bold active:opacity-60"
+                >
+                  ✕
+                </button>
+              )}
               {activeSpaceId === space.id && (
                 <div className="text-green font-bold text-lg">✓</div>
               )}

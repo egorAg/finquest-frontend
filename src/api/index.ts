@@ -29,6 +29,9 @@ export const createSpace = (data: { name: string; emoji: string; type: Space['ty
 export const addSpaceMember = (spaceId: string, telegramUsername: string) =>
   apiClient.post<Space>(`/spaces/${spaceId}/members`, { telegramUsername }).then((r) => r.data)
 
+export const leaveSpace = (spaceId: string) =>
+  apiClient.delete<{ ok: boolean }>(`/spaces/${spaceId}/leave`).then((r) => r.data)
+
 export const createSpaceInvite = (spaceId: string) =>
   apiClient.post<{ token: string; expiresAt: string; inviteUrl: string }>(`/spaces/${spaceId}/invite`).then((r) => r.data)
 
