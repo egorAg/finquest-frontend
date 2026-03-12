@@ -47,10 +47,16 @@ export function Spaces() {
     },
   })
 
-  const { mutate: doInvite } = useMutation({
+  const { mutate: doInvite, isPending: isInviting } = useMutation({
     mutationFn: (spaceId: string) => createSpaceInvite(spaceId),
     onSuccess: (data) => {
       setInviteLink(data.inviteUrl)
+    },
+    onError: () => {
+      const tg = (window as any).Telegram?.WebApp
+      if (tg?.showAlert) {
+        tg.showAlert('Не удалось создать ссылку. Обновите приложение.')
+      }
     },
   })
 
@@ -94,10 +100,11 @@ export function Spaces() {
             <div className="flex items-center gap-2">
               <button
                 type="button"
+                disabled={isInviting}
                 onClick={(e) => { e.stopPropagation(); doInvite(space.id) }}
-                className="text-xs text-muted bg-card2 rounded-xl px-3 py-1.5 font-bold active:opacity-60"
+                className="text-xs text-muted bg-card2 rounded-xl px-3 py-1.5 font-bold active:opacity-60 disabled:opacity-40"
               >
-                Invite
+                {isInviting ? '...' : '🔗'}
               </button>
               {activeSpaceId === space.id && (
                 <div className="text-green font-bold text-lg">✓</div>
