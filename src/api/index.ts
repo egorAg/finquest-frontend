@@ -15,7 +15,7 @@ export const authTelegram = (initData: string) =>
 export const getMe = () =>
   apiClient.get<User>('/user/me').then((r) => r.data)
 
-export const updateMe = (data: { firstName?: string; avatarEmoji?: string; settings?: Partial<User['settings']> }) =>
+export const updateMe = (data: { firstName?: string; avatarEmoji?: string; onboardingDone?: boolean; settings?: Partial<User['settings']> }) =>
   apiClient.patch<User>('/user/me', data).then((r) => r.data)
 
 // ─── Spaces ───────────────────────────────────────────────────────────────────
