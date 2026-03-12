@@ -14,11 +14,13 @@ export function Settings() {
 
   if (!user) return null
 
+  const settings = user.settings ?? { currency: 'RUB', notifications: true, theme: 'dark' as const }
+
   const toggle = (key: 'notifications' | 'theme') => {
     if (key === 'notifications') {
-      mutate({ settings: { notifications: !user.settings.notifications } })
+      mutate({ settings: { notifications: !settings.notifications } })
     } else {
-      mutate({ settings: { theme: user.settings.theme === 'dark' ? 'light' : 'dark' } })
+      mutate({ settings: { theme: settings.theme === 'dark' ? 'light' : 'dark' } })
     }
   }
 
@@ -42,13 +44,13 @@ export function Settings() {
             <ToggleRow
               label="Уведомления"
               emoji="🔔"
-              value={user.settings.notifications}
+              value={settings.notifications}
               onChange={() => toggle('notifications')}
             />
             <ToggleRow
               label="Светлая тема"
               emoji="☀️"
-              value={user.settings.theme === 'light'}
+              value={settings.theme === 'light'}
               onChange={() => toggle('theme')}
             />
           </Card>
@@ -63,7 +65,7 @@ export function Settings() {
                 key={c}
                 onClick={() => mutate({ settings: { currency: c } })}
                 className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${
-                  user.settings.currency === c
+                  settings.currency === c
                     ? 'bg-green/20 text-green border border-green/30'
                     : 'bg-card2 text-muted'
                 }`}
