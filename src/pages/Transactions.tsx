@@ -44,7 +44,7 @@ export function Transactions() {
   return (
     <div>
       <PageHeader title="Операции" back />
-      <div className="px-[18px] space-y-[14px]">
+      <div className="px-[18px] pt-4 space-y-[14px]">
         {/* Month picker */}
         <div className="flex items-center justify-between">
           <button
@@ -174,7 +174,7 @@ export function TransactionDetail() {
   return (
     <div>
       <PageHeader title="Операция" back />
-      <div className="px-[18px] space-y-[14px]">
+      <div className="px-[18px] pt-4 space-y-[14px]">
         {/* Main card */}
         <Card className="text-center py-6">
           <div className="text-5xl mb-2">{tx.categoryEmoji}</div>

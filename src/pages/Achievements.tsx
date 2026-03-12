@@ -16,7 +16,7 @@ export function Achievements() {
   return (
     <div>
       <PageHeader title="Достижения" back />
-      <div className="px-4 space-y-4">
+      <div className="px-[18px] pt-4 space-y-[14px]">
         {/* Progress */}
         <Card className="flex items-center gap-4">
           <div className="text-4xl">🏆</div>

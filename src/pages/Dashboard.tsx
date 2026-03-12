@@ -106,7 +106,7 @@ export function Dashboard() {
       </div>
 
       {/* Scrollable content */}
-      <div style={{ padding: '0 18px 16px' }}>
+      <div style={{ padding: '12px 18px 16px' }}>
 
         {/* XP Card */}
         <XpBar
