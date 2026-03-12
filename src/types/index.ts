@@ -126,6 +126,9 @@ export interface AnalyticsSummary {
   balance: number
   byCategory: { category: string; emoji: string; amount: number; percent: number }[]
   byDay: { date: string; income: number; expense: number }[]
+  prevMonth: { income: number; expense: number; balance: number }
+  daysInMonth: number
+  daysElapsed: number
 }
 
 export interface KnowledgeArticle {

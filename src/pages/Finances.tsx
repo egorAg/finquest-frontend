@@ -4,7 +4,7 @@ import { useAppStore } from '../store'
 import { getAnalyticsSummary } from '../api'
 import { Card } from '../components/ui/Card'
 import { PageHeader } from '../components/layout/PageHeader'
-import { currentMonth } from '../lib/utils'
+import { currentMonth, cn } from '../lib/utils'
 import { useFmt } from '../hooks/useFmt'
 
 type DayData = { date: string; income: number; expense: number }
@@ -101,7 +101,7 @@ function DayChart({ days }: { days: DayData[] }) {
 }
 
 export function Finances() {
-  const { activeSpaceId } = useAppStore()
+  const { activeSpaceId, spaces } = useAppStore()
   const [month, setMonth] = useState(currentMonth())
   const fmt = useFmt()
 
@@ -158,6 +158,9 @@ export function Finances() {
               </Card>
             </div>
 
+            {/* Insight cards */}
+            <InsightCards data={data} fmt={fmt} spaces={spaces} activeSpaceId={activeSpaceId} />
+
             {/* Daily chart */}
             {data.byDay && data.byDay.length > 0 && (
               <Card>
@@ -203,5 +206,106 @@ export function Finances() {
         )}
       </div>
     </div>
+  )
+}
+
+function InsightCards({ data, fmt, spaces, activeSpaceId }: {
+  data: import('../types').AnalyticsSummary
+  fmt: (n: number) => string
+  spaces: import('../types').Space[]
+  activeSpaceId: string | null
+}) {
+  const isCurrentMonth = data.daysElapsed < data.daysInMonth
+  const remainingDays = data.daysInMonth - data.daysElapsed
+
+  // Forecast
+  const avgDailyExpense = data.daysElapsed > 0 ? data.expense / data.daysElapsed : 0
+  const forecastedExpense = data.expense + avgDailyExpense * remainingDays
+
+  // Comparison
+  const incomeChange = data.prevMonth.income > 0
+    ? ((data.income - data.prevMonth.income) / data.prevMonth.income) * 100
+    : data.income > 0 ? 100 : 0
+  const expenseChange = data.prevMonth.expense > 0
+    ? ((data.expense - data.prevMonth.expense) / data.prevMonth.expense) * 100
+    : data.expense > 0 ? 100 : 0
+
+  // "Will money last?"
+  const projectedBalance = data.balance - avgDailyExpense * remainingDays
+  const activeSpace = spaces.find((s) => s.id === activeSpaceId)
+  const budget = activeSpace?.monthlyBudget
+
+  let status: 'green' | 'yellow' | 'red' = 'green'
+  if (budget && budget > 0) {
+    const usage = (forecastedExpense / budget) * 100
+    if (usage > 110) status = 'red'
+    else if (usage > 90) status = 'yellow'
+  } else {
+    if (projectedBalance < -avgDailyExpense * 3) status = 'red'
+    else if (projectedBalance < 0) status = 'yellow'
+  }
+
+  const statusColors = {
+    green: { text: 'text-green', bg: 'bg-green', border: 'border-green/30' },
+    yellow: { text: 'text-yellow-400', bg: 'bg-yellow-400', border: 'border-yellow-400/30' },
+    red: { text: 'text-red', bg: 'bg-red', border: 'border-red/30' },
+  }
+  const sc = statusColors[status]
+
+  return (
+    <>
+      {/* Forecast */}
+      {isCurrentMonth && data.daysElapsed > 0 && (
+        <Card>
+          <div className="text-xs text-muted mb-1">🔮 Прогноз расходов</div>
+          <div className="font-bold text-lg">{fmt(forecastedExpense)}</div>
+          <div className="text-xs text-muted mt-1">
+            ~{fmt(avgDailyExpense)}/день · осталось {remainingDays} дн.
+          </div>
+        </Card>
+      )}
+
+      {/* Comparison */}
+      {(data.prevMonth.income > 0 || data.prevMonth.expense > 0) && (
+        <Card>
+          <div className="text-xs text-muted mb-2">📊 Сравнение с прошлым месяцем</div>
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <div className="text-xs text-muted mb-1">Доходы</div>
+              <div className={cn('font-bold text-sm', incomeChange >= 0 ? 'text-green' : 'text-red')}>
+                {incomeChange >= 0 ? '↑' : '↓'} {Math.abs(Math.round(incomeChange))}%
+              </div>
+            </div>
+            <div className="flex-1">
+              <div className="text-xs text-muted mb-1">Расходы</div>
+              <div className={cn('font-bold text-sm', expenseChange <= 0 ? 'text-green' : 'text-red')}>
+                {expenseChange >= 0 ? '↑' : '↓'} {Math.abs(Math.round(expenseChange))}%
+              </div>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {/* Will money last? */}
+      {isCurrentMonth && data.daysElapsed > 0 && (
+        <Card className={sc.border}>
+          <div className="flex items-center gap-2 mb-1">
+            <span className={cn('w-2.5 h-2.5 rounded-full', sc.bg)} />
+            <span className="text-xs text-muted">Хватит ли денег?</span>
+          </div>
+          <div className={cn('font-bold text-lg', sc.text)}>
+            {fmt(projectedBalance)}
+          </div>
+          <div className="text-xs text-muted mt-1">
+            прогноз баланса на конец месяца
+          </div>
+          {budget && budget > 0 && (
+            <div className="text-xs text-muted mt-1">
+              Бюджет: {fmt(budget)} · расход: ~{Math.round((forecastedExpense / budget) * 100)}%
+            </div>
+          )}
+        </Card>
+      )}
+    </>
   )
 }
