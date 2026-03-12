@@ -7,7 +7,7 @@ import { Card } from '../components/ui/Card'
 import { PageHeader } from '../components/layout/PageHeader'
 import { fmtDateGroup, fmtDateTime, currentMonth } from '../lib/utils'
 import { useFmt } from '../hooks/useFmt'
-import type { Transaction, RecurringTransaction } from '../types'
+import type { Transaction } from '../types'
 
 type Filter = 'ALL' | 'EXPENSE' | 'INCOME'
 type Tab = 'transactions' | 'recurring'
