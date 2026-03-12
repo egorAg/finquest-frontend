@@ -19,6 +19,7 @@ export interface User {
   lastActiveDate: string | null
   totalXpEarned: number
   achievements: string[]
+  onboardingDone: boolean
   settings: UserSettings
   createdAt: string
 }
