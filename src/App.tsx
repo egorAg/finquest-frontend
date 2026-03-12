@@ -18,6 +18,7 @@ import { Settings } from './pages/Settings'
 import { Spaces } from './pages/Spaces'
 import { Challenges } from './pages/Challenges'
 import { LevelProgress } from './pages/LevelProgress'
+import { CreateGoal } from './pages/CreateGoal'
 
 const qc = new QueryClient({
   defaultOptions: {
@@ -75,6 +76,7 @@ function AppRoutes() {
       <Route path="spaces" element={<Spaces />} />
       <Route path="challenges" element={<Challenges />} />
       <Route path="level-progress" element={<LevelProgress />} />
+      <Route path="goals/create" element={<CreateGoal />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

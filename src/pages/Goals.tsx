@@ -1,25 +1,21 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../store'
-import { getGoals, updateGoal, createGoal } from '../api'
+import { getGoals, updateGoal } from '../api'
 import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
 import { PageHeader } from '../components/layout/PageHeader'
 import { useFmt } from '../hooks/useFmt'
 
 export function Goals() {
+  const navigate = useNavigate()
   const qc = useQueryClient()
   const { activeSpaceId } = useAppStore()
   const fmt = useFmt()
   const [tab, setTab] = useState<'active' | 'archived'>('active')
-  const [showAdd, setShowAdd] = useState(false)
   const [contribute, setContribute] = useState<{ id: string; name: string } | null>(null)
   const [contributeAmount, setContributeAmount] = useState('')
-
-  // New goal form
-  const [newName, setNewName] = useState('')
-  const [newEmoji, setNewEmoji] = useState('🎯')
-  const [newTarget, setNewTarget] = useState('')
 
   const { data: goals = [] } = useQuery({
     queryKey: ['goals', activeSpaceId],
@@ -32,11 +28,6 @@ export function Goals() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['goals'] }),
   })
 
-  const { mutate: doCreate, isPending } = useMutation({
-    mutationFn: () => createGoal({ spaceId: activeSpaceId!, name: newName, emoji: newEmoji, targetAmount: parseFloat(newTarget) }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['goals'] }); setShowAdd(false); setNewName(''); setNewTarget('') },
-  })
-
   const filtered = goals.filter((g) => tab === 'active' ? !g.isCompleted : g.isCompleted)
 
   return (
@@ -44,7 +35,7 @@ export function Goals() {
       <PageHeader
         title="Цели"
         right={
-          <button onClick={() => setShowAdd(true)} className="text-green text-xl font-bold">+</button>
+          <button onClick={() => navigate('/goals/create')} className="text-green text-xl font-bold">+</button>
         }
       />
       <div className="px-[18px] pt-4 space-y-[14px]">
@@ -129,27 +120,6 @@ export function Goals() {
         </div>
       )}
 
-      {/* Add goal bottom sheet */}
-      {showAdd && (
-        <div className="fixed inset-0 z-50 flex items-end">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setShowAdd(false)} />
-          <div className="relative w-full bg-card rounded-t-3xl p-6 space-y-4">
-            <h3 className="font-display font-bold text-lg">Новая цель</h3>
-            <div className="flex gap-2">
-              <input value={newEmoji} onChange={(e) => setNewEmoji(e.target.value)}
-                className="w-14 bg-card2 rounded-2xl text-center text-2xl border border-border outline-none py-3" />
-              <input placeholder="Название цели" value={newName} onChange={(e) => setNewName(e.target.value)}
-                className="flex-1 bg-card2 rounded-2xl px-4 py-3 font-bold outline-none border border-border" />
-            </div>
-            <input type="number" placeholder="Целевая сумма" value={newTarget} onChange={(e) => setNewTarget(e.target.value)}
-              className="w-full bg-card2 rounded-2xl px-4 py-3 font-bold outline-none border border-border"
-              inputMode="decimal" />
-            <Button size="lg" disabled={!newName || !newTarget || isPending} onClick={() => doCreate()}>
-              {isPending ? 'Создание...' : 'Создать цель'}
-            </Button>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

@@ -235,7 +235,7 @@ export function Dashboard() {
                 Нет активных целей
               </div>
               <button
-                onClick={() => navigate('/goals')}
+                onClick={() => navigate('/goals/create')}
                 className="font-bold"
                 style={{
                   fontSize: 13, padding: '8px 20px', borderRadius: 12,
