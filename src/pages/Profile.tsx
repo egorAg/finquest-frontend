@@ -87,7 +87,7 @@ export function Profile() {
                 ✕
               </button>
             </div>
-            <div className="grid grid-cols-8 gap-2">
+            <div className="grid grid-cols-8 gap-2 overflow-y-auto" style={{ maxHeight: '45vh' }}>
               {AVATAR_EMOJIS.map((emoji) => (
                 <button
                   key={emoji}
