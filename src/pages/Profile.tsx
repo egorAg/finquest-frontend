@@ -10,7 +10,7 @@ import { PageHeader } from '../components/layout/PageHeader'
 const AVATAR_EMOJIS = [
   '😀','😎','🤓','🧐','😏','🥸','🤩','😇','🥳','😈',
   '🐱','🐶','🐸','🦊','🐼','🦁','🐯','🐨','🐮','🐷',
-  '🦄','🐙','🦋','🐬','🦅','🦉','🐲','🦝','🐺','🦊',
+  '🦄','🐙','🦋','🐬','🦅','🦉','🐲','🦝','🐺','🐧',
   '🧙','🧑‍💻','👨‍🚀','🧑‍🎨','🥷','👑','🎩','🤖','👾','💀',
 ]
 
@@ -19,11 +19,20 @@ export function Profile() {
   const { user, setUser } = useAppStore()
   const [showPicker, setShowPicker] = useState(false)
 
+  const openPicker = () => {
+    window.Telegram?.WebApp?.disableVerticalSwipes?.()
+    setShowPicker(true)
+  }
+  const closePicker = () => {
+    window.Telegram?.WebApp?.enableVerticalSwipes?.()
+    setShowPicker(false)
+  }
+
   const { mutate: saveAvatar, isPending } = useMutation({
     mutationFn: (emoji: string) => updateMe({ avatarEmoji: emoji }),
     onSuccess: (updated) => {
       setUser(updated)
-      setShowPicker(false)
+      closePicker()
     },
   })
 
@@ -38,7 +47,7 @@ export function Profile() {
         <Card className="text-center py-6">
           <button
             type="button"
-            onClick={() => setShowPicker(true)}
+            onClick={openPicker}
             className="relative inline-block mb-2 active:opacity-70"
           >
             <span className="text-5xl">{user.avatarEmoji ?? '👤'}</span>
@@ -75,7 +84,7 @@ export function Profile() {
       {/* Avatar picker bottom sheet */}
       {showPicker && (
         <div className="fixed inset-0 z-50 flex flex-col justify-end">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setShowPicker(false)} />
+          <div className="absolute inset-0 bg-black/60" onClick={closePicker} />
           <div
             className="relative rounded-t-3xl p-5"
             style={{ background: '#161B27' }}
@@ -85,7 +94,7 @@ export function Profile() {
               <span className="font-bold text-sm">Выбери аватарку</span>
               <button
                 type="button"
-                onClick={() => setShowPicker(false)}
+                onClick={closePicker}
                 className="text-muted text-xl leading-none"
               >
                 ✕
