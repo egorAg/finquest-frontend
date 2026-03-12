@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* FinQuest colors */
+  --color-green:   #4ADE80;
+  --color-yellow:  #FACC15;
+  --color-coral:   #F97316;
+  --color-blue:    #38BDF8;
+  --color-purple:  #A78BFA;
+  --color-red:     #F87171;
+
+  /* Surfaces */
+  --color-bg:      #0D1117;
+  --color-card:    #161B27;
+  --color-card2:   #1E2535;
+  --color-nav:     #111827;
+  --color-border:  rgba(255,255,255,0.06);
+
+  /* Text */
+  --color-text:    #F0F4FF;
+  --color-muted:   rgba(240,244,255,0.45);
+
+  /* Fonts */
+  --font-sans:    'Nunito Sans', sans-serif;
+  --font-display: 'Nunito', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+::-webkit-scrollbar { display: none; }
+* { scrollbar-width: none; }
