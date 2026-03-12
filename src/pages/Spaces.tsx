@@ -16,6 +16,7 @@ export function Spaces() {
   const qc = useQueryClient()
   const { activeSpaceId, setActiveSpaceId } = useAppStore()
   const [showCreate, setShowCreate] = useState(false)
+  const [inviteLink, setInviteLink] = useState<string | null>(null)
   const [name, setName] = useState('')
   const [emoji, setEmoji] = useState('👤')
   const [color, setColor] = useState('#4ADE80')
@@ -49,10 +50,7 @@ export function Spaces() {
   const { mutate: doInvite } = useMutation({
     mutationFn: (spaceId: string) => createSpaceInvite(spaceId),
     onSuccess: (data) => {
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(data.inviteUrl).catch(() => {})
-      }
-      alert(`Ссылка скопирована!\n\n${data.inviteUrl}`)
+      setInviteLink(data.inviteUrl)
     },
   })
 
@@ -95,8 +93,9 @@ export function Spaces() {
             </div>
             <div className="flex items-center gap-2">
               <button
+                type="button"
                 onClick={(e) => { e.stopPropagation(); doInvite(space.id) }}
-                className="text-xs text-muted bg-card2 rounded-xl px-3 py-1.5 font-bold"
+                className="text-xs text-muted bg-card2 rounded-xl px-3 py-1.5 font-bold active:opacity-60"
               >
                 Invite
               </button>
@@ -111,6 +110,34 @@ export function Spaces() {
           + Новое пространство
         </Button>
       </div>
+
+      {inviteLink && (
+        <div className="fixed inset-0 z-50 flex items-end">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setInviteLink(null)} />
+          <div className="relative w-full bg-card rounded-t-3xl p-6 space-y-4">
+            <h3 className="font-display font-bold text-lg">Пригласить в пространство</h3>
+            <p className="text-sm text-muted">Отправь эту ссылку другу. Она действует 7 дней.</p>
+            <div className="bg-card2 rounded-2xl px-4 py-3 text-xs text-muted break-all select-all">
+              {inviteLink}
+            </div>
+            <Button
+              size="lg"
+              onClick={() => {
+                if (navigator.clipboard) {
+                  navigator.clipboard.writeText(inviteLink).catch(() => {})
+                }
+                const tg = (window as any).Telegram?.WebApp
+                if (tg?.showAlert) {
+                  tg.showAlert('Ссылка скопирована!')
+                }
+                setInviteLink(null)
+              }}
+            >
+              Скопировать ссылку
+            </Button>
+          </div>
+        </div>
+      )}
 
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-end">
