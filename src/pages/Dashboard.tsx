@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../store'
@@ -7,6 +7,76 @@ import { XpBar } from '../components/ui/XpBar'
 import { fmt, currentMonth, fmtDateGroup } from '../lib/utils'
 
 type Period = 'month' | 'year'
+
+// ─── Smooth line chart ────────────────────────────────────────────────────────
+
+type ChartPoint = { label: string; income: number; expense: number }
+
+function smoothPath(pts: [number, number][], tension = 0.35): string {
+  if (pts.length === 0) return ''
+  if (pts.length === 1) return `M ${pts[0][0]} ${pts[0][1]}`
+  let d = `M ${pts[0][0]} ${pts[0][1]}`
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[Math.max(i - 1, 0)]
+    const p1 = pts[i]
+    const p2 = pts[i + 1]
+    const p3 = pts[Math.min(i + 2, pts.length - 1)]
+    const cp1x = p1[0] + (p2[0] - p0[0]) * tension
+    const cp1y = p1[1] + (p2[1] - p0[1]) * tension
+    const cp2x = p2[0] - (p3[0] - p1[0]) * tension
+    const cp2y = p2[1] - (p3[1] - p1[1]) * tension
+    d += ` C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)} ${cp2x.toFixed(1)} ${cp2y.toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`
+  }
+  return d
+}
+
+function LineChart({ data, period }: { data: ChartPoint[]; period: Period }) {
+  const W = 330, H = 110, PAD_T = 8, PAD_B = 18
+  const chartH = H - PAD_T - PAD_B
+  const n = data.length
+  if (n === 0) return null
+
+  const maxVal = Math.max(...data.flatMap((d) => [d.income, d.expense]), 1)
+  const toX = (i: number) => n === 1 ? W / 2 : (i / (n - 1)) * W
+  const toY = (v: number) => PAD_T + chartH * (1 - v / maxVal)
+
+  const incPts: [number, number][] = data.map((d, i) => [toX(i), toY(d.income)])
+  const expPts: [number, number][] = data.map((d, i) => [toX(i), toY(d.expense)])
+
+  const incLine = smoothPath(incPts)
+  const expLine = smoothPath(expPts)
+  const incArea = incLine + ` L ${W} ${H - PAD_B} L 0 ${H - PAD_B} Z`
+  const expArea = expLine + ` L ${W} ${H - PAD_B} L 0 ${H - PAD_B} Z`
+
+  const labelFirst = data[0].label
+  const labelMid = data[Math.floor(n / 2)].label
+  const labelLast = data[n - 1].label
+
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'block' }}>
+      <defs>
+        <linearGradient id="dash-gi" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#4ADE80" stopOpacity=".25" />
+          <stop offset="100%" stopColor="#4ADE80" stopOpacity="0" />
+        </linearGradient>
+        <linearGradient id="dash-ge" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#F97316" stopOpacity=".2" />
+          <stop offset="100%" stopColor="#F97316" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {[PAD_T + chartH * 0.25, PAD_T + chartH * 0.55, PAD_T + chartH * 0.85].map((y) => (
+        <line key={y} x1="0" y1={y.toFixed(0)} x2={W} y2={y.toFixed(0)} stroke="rgba(255,255,255,.05)" strokeWidth="1" />
+      ))}
+      <path d={incArea} fill="url(#dash-gi)" />
+      <path d={incLine} fill="none" stroke="#4ADE80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d={expArea} fill="url(#dash-ge)" />
+      <path d={expLine} fill="none" stroke="#F97316" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      <text x="2" y={H - 2} fontSize="9" fill="rgba(255,255,255,.25)" fontFamily="Nunito Sans">{labelFirst}</text>
+      <text x={W / 2 - 8} y={H - 2} fontSize="9" fill="rgba(255,255,255,.25)" fontFamily="Nunito Sans">{labelMid}</text>
+      <text x={W - 20} y={H - 2} fontSize="9" fill="rgba(255,255,255,.25)" fontFamily="Nunito Sans">{labelLast}</text>
+    </svg>
+  )
+}
 
 export function Dashboard() {
   const navigate = useNavigate()
@@ -58,6 +128,41 @@ export function Dashboard() {
 
   const activeGoals = goals.filter((g) => !g.isCompleted)
   const recentTxs = [...txs].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5)
+
+  const chartData = useMemo<ChartPoint[]>(() => {
+    if (period === 'month') {
+      const [yr, mo] = month.split('-').map(Number)
+      const daysInMonth = new Date(yr, mo, 0).getDate()
+      const map = new Map<number, { income: number; expense: number }>()
+      for (const tx of filtered) {
+        const day = parseInt(tx.date.slice(8, 10), 10)
+        const cur = map.get(day) ?? { income: 0, expense: 0 }
+        if (tx.type === 'INCOME') cur.income += tx.amount
+        else cur.expense += tx.amount
+        map.set(day, cur)
+      }
+      return Array.from({ length: daysInMonth }, (_, i) => ({
+        label: String(i + 1),
+        income: map.get(i + 1)?.income ?? 0,
+        expense: map.get(i + 1)?.expense ?? 0,
+      }))
+    } else {
+      const MONTHS = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек']
+      const map = new Map<number, { income: number; expense: number }>()
+      for (const tx of filtered) {
+        const mo = parseInt(tx.date.slice(5, 7), 10)
+        const cur = map.get(mo) ?? { income: 0, expense: 0 }
+        if (tx.type === 'INCOME') cur.income += tx.amount
+        else cur.expense += tx.amount
+        map.set(mo, cur)
+      }
+      return Array.from({ length: 12 }, (_, i) => ({
+        label: MONTHS[i],
+        income: map.get(i + 1)?.income ?? 0,
+        expense: map.get(i + 1)?.expense ?? 0,
+      }))
+    }
+  }, [filtered, period, month])
 
   if (!user) return null
 
@@ -205,6 +310,34 @@ export function Dashboard() {
                 </span>
                 <span className="font-black text-coral" style={{ fontSize: 15 }}>{fmt(expense)}</span>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Chart card */}
+        <div
+          className="rounded-3xl mb-[14px] border cursor-pointer"
+          style={{ padding: '18px 18px 14px', background: '#161B27', borderColor: 'rgba(255,255,255,.06)' }}
+          onClick={() => navigate('/finances')}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <span className="font-black text-text" style={{ fontSize: 15 }}>{periodLabel}</span>
+            <button
+              className="font-bold font-sans"
+              style={{ fontSize: 12, color: 'rgba(255,255,255,.3)', background: 'none', border: 'none' }}
+            >
+              Аналитика →
+            </button>
+          </div>
+          <LineChart data={chartData} period={period} />
+          <div className="flex gap-4 mt-[10px]">
+            <div className="flex items-center gap-1.5">
+              <div style={{ width: 8, height: 8, borderRadius: 2, background: '#4ADE80' }} />
+              <span className="font-sans" style={{ fontSize: 11, color: 'rgba(255,255,255,.4)' }}>Доходы</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div style={{ width: 8, height: 8, borderRadius: 2, background: '#F97316' }} />
+              <span className="font-sans" style={{ fontSize: 11, color: 'rgba(255,255,255,.4)' }}>Расходы</span>
             </div>
           </div>
         </div>
