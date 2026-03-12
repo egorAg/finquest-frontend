@@ -3,9 +3,8 @@ import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../store'
 import { getTransactions, getGoals, getSpaces } from '../api'
-import { Card } from '../components/ui/Card'
 import { XpBar } from '../components/ui/XpBar'
-import { fmt, currentMonth } from '../lib/utils'
+import { fmt, currentMonth, fmtDateGroup } from '../lib/utils'
 
 type Period = 'month' | 'year'
 
@@ -45,7 +44,6 @@ export function Dashboard() {
     enabled: !!activeSpaceId,
   })
 
-  // Filter by period
   const filtered = period === 'year'
     ? txs.filter((t) => t.date.startsWith(year))
     : txs
@@ -54,137 +52,274 @@ export function Dashboard() {
   const expense = filtered.filter((t) => t.type === 'EXPENSE').reduce((s, t) => s + t.amount, 0)
   const balance = income - expense
 
+  const periodLabel = period === 'month'
+    ? new Date().toLocaleDateString('ru', { month: 'long' })
+    : new Date().getFullYear().toString()
+
   const activeGoals = goals.filter((g) => !g.isCompleted)
   const recentTxs = [...txs].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5)
 
   if (!user) return null
 
   return (
-    <div className="px-4 pt-4 space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        {/* Space switcher */}
-        <button
-          onClick={() => navigate('/spaces')}
-          className="flex items-center gap-2 bg-card2 rounded-xl px-3 py-2 text-sm font-bold"
-        >
-          <span>{activeSpace?.emoji ?? '👤'}</span>
-          <span>{activeSpace?.name ?? 'Загрузка...'}</span>
-          <span className="text-muted">▾</span>
-        </button>
-
-        <div className="flex items-center gap-2">
-          <button onClick={() => navigate('/notifications')} className="text-2xl relative">
+    <div>
+      {/* Topbar */}
+      <div
+        className="flex items-center justify-between sticky top-0 z-10 bg-bg"
+        style={{ padding: '16px 22px 12px' }}
+      >
+        <div className="flex flex-col" style={{ gap: 2 }}>
+          <span
+            className="font-semibold font-sans"
+            style={{ fontSize: 12, color: 'rgba(255,255,255,.35)' }}
+          >
+            Добрый день,
+          </span>
+          <span className="font-black text-text" style={{ fontSize: 18 }}>
+            {user.firstName} 👋
+          </span>
+        </div>
+        <div className="flex items-center" style={{ gap: 10 }}>
+          <button
+            onClick={() => navigate('/notifications')}
+            className="flex items-center justify-center"
+            style={{
+              width: 38, height: 38, borderRadius: 12,
+              background: 'rgba(255,255,255,.06)',
+              fontSize: 17, border: 'none',
+            }}
+          >
             🔔
           </button>
-          <button onClick={() => navigate('/profile')}>
-            <div className="w-9 h-9 rounded-full bg-green/20 flex items-center justify-center text-lg">
-              {user.avatarEmoji}
-            </div>
+          <button
+            onClick={() => navigate('/profile')}
+            className="flex items-center justify-center"
+            style={{
+              width: 38, height: 38, borderRadius: 12,
+              background: 'linear-gradient(135deg, #4ADE80, #15803D)',
+              fontSize: 18, border: 'none',
+            }}
+          >
+            {user.avatarEmoji}
           </button>
         </div>
       </div>
 
-      {/* Balance card */}
-      <Card className="bg-gradient-to-br from-green/20 to-blue/10 border-green/20">
-        {/* Period pills */}
-        <div className="flex gap-2 mb-4">
-          {(['month', 'year'] as Period[]).map((p) => (
+      {/* Scrollable content */}
+      <div style={{ padding: '0 18px 16px' }}>
+
+        {/* XP Card */}
+        <XpBar
+          xp={user.xp}
+          xpToNext={user.xpToNext}
+          level={user.level}
+          streakDays={user.streakDays}
+          className="mb-[14px]"
+        />
+
+        {/* Balance Card */}
+        <div
+          className="rounded-3xl mb-[14px] border"
+          style={{ padding: 20, background: '#161B27', borderColor: 'rgba(255,255,255,.06)' }}
+        >
+          {/* Top: space switcher + period pills */}
+          <div className="flex items-center justify-between mb-4">
             <button
-              key={p}
-              onClick={() => setPeriod(p)}
-              className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
-                period === p ? 'bg-white/10 text-text' : 'text-muted'
-              }`}
+              onClick={() => navigate('/spaces')}
+              className="flex items-center font-extrabold"
+              style={{
+                gap: 7, borderRadius: 12, padding: '6px 12px',
+                fontSize: 13, background: 'rgba(255,255,255,.06)',
+                color: '#F0F4FF', border: 'none',
+              }}
             >
-              {p === 'month' ? 'Месяц' : 'Год'}
+              <span>{activeSpace?.emoji ?? '👤'}</span>
+              <span>{activeSpace?.name ?? 'Загрузка...'}</span>
+              <span style={{ fontSize: 10, opacity: .5 }}>▾</span>
             </button>
-          ))}
-        </div>
-
-        <div className="text-4xl font-display font-black mb-1">
-          {balance >= 0 ? '+' : ''}{fmt(balance)}
-        </div>
-        <div className="flex gap-4 text-sm text-muted mb-4">
-          <span className="text-green">↑ {fmt(income)}</span>
-          <span className="text-red">↓ {fmt(expense)}</span>
-        </div>
-
-        <XpBar xp={user.xp} xpToNext={user.xpToNext} level={user.level} />
-      </Card>
-
-      {/* Active goals */}
-      {activeGoals.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="font-display font-bold">Цели</h2>
-            <button onClick={() => navigate('/goals')} className="text-xs text-muted">Все →</button>
+            <div className="flex gap-1">
+              {(['month', 'year'] as Period[]).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setPeriod(p)}
+                  className="font-bold font-sans"
+                  style={{
+                    borderRadius: 8, padding: '4px 10px', fontSize: 11,
+                    background: period === p ? 'rgba(255,255,255,.1)' : 'transparent',
+                    color: period === p ? '#F0F4FF' : 'rgba(255,255,255,.3)',
+                    border: 'none', cursor: 'pointer',
+                  }}
+                >
+                  {p === 'month' ? 'Месяц' : 'Год'}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="space-y-2">
+
+          {/* Balance amount */}
+          <div
+            className="font-black"
+            style={{ fontSize: 38, letterSpacing: '-.5px', color: '#F0F4FF', marginBottom: 18 }}
+          >
+            {balance >= 0 ? '+' : ''}{fmt(balance)}
+          </div>
+
+          {/* Income / Expense cards */}
+          <div className="flex gap-2.5">
+            <div
+              className="flex-1 flex items-center rounded-[14px]"
+              style={{ gap: 10, padding: '12px 14px', background: 'rgba(255,255,255,.04)' }}
+            >
+              <div
+                className="flex items-center justify-center flex-shrink-0"
+                style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(74,222,128,.15)', fontSize: 15 }}
+              >
+                ↑
+              </div>
+              <div className="flex flex-col">
+                <span
+                  className="font-bold uppercase font-sans"
+                  style={{ fontSize: 10, letterSpacing: '.06em', color: 'rgba(255,255,255,.3)' }}
+                >
+                  Доходы · {periodLabel}
+                </span>
+                <span className="font-black text-green" style={{ fontSize: 15 }}>{fmt(income)}</span>
+              </div>
+            </div>
+            <div
+              className="flex-1 flex items-center rounded-[14px]"
+              style={{ gap: 10, padding: '12px 14px', background: 'rgba(255,255,255,.04)' }}
+            >
+              <div
+                className="flex items-center justify-center flex-shrink-0"
+                style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(249,115,22,.15)', fontSize: 15 }}
+              >
+                ↓
+              </div>
+              <div className="flex flex-col">
+                <span
+                  className="font-bold uppercase font-sans"
+                  style={{ fontSize: 10, letterSpacing: '.06em', color: 'rgba(255,255,255,.3)' }}
+                >
+                  Расходы · {periodLabel}
+                </span>
+                <span className="font-black text-coral" style={{ fontSize: 15 }}>{fmt(expense)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Active goals */}
+        {activeGoals.length > 0 && (
+          <div
+            className="rounded-3xl mb-[14px] border"
+            style={{ padding: '18px 18px 14px', background: '#161B27', borderColor: 'rgba(255,255,255,.06)' }}
+          >
+            <div className="flex items-center justify-between mb-[14px]">
+              <span className="font-black text-text" style={{ fontSize: 15 }}>Цели 🎯</span>
+              <button
+                onClick={() => navigate('/goals')}
+                className="font-bold font-sans"
+                style={{ fontSize: 12, color: 'rgba(255,255,255,.3)', background: 'none', border: 'none' }}
+              >
+                Все →
+              </button>
+            </div>
             {activeGoals.slice(0, 2).map((goal) => {
               const pct = Math.min((goal.currentAmount / goal.targetAmount) * 100, 100)
               return (
-                <Card key={goal.id} className="cursor-pointer" onClick={() => navigate(`/goals/${goal.id}`)}>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl">{goal.emoji}</span>
-                      <span className="font-bold text-sm">{goal.name}</span>
+                <div
+                  key={goal.id}
+                  className="cursor-pointer mb-[14px] last:mb-0"
+                  onClick={() => navigate(`/goals/${goal.id}`)}
+                >
+                  <div className="flex items-center justify-between mb-[7px]">
+                    <div className="flex items-center" style={{ gap: 10 }}>
+                      <span style={{ fontSize: 20 }}>{goal.emoji}</span>
+                      <span className="font-extrabold text-text" style={{ fontSize: 13 }}>{goal.name}</span>
                     </div>
-                    <span className="text-xs text-muted">{Math.round(pct)}%</span>
+                    <span className="font-extrabold" style={{ fontSize: 12, color: goal.color }}>
+                      {Math.round(pct)}%
+                    </span>
                   </div>
-                  <div className="h-1.5 bg-card2 rounded-full overflow-hidden">
+                  <div
+                    className="rounded-full overflow-hidden"
+                    style={{ height: 8, background: 'rgba(255,255,255,.07)' }}
+                  >
                     <div
-                      className="h-full rounded-full transition-all"
+                      className="h-full rounded-full"
                       style={{ width: `${pct}%`, background: goal.color }}
                     />
                   </div>
-                  <div className="flex justify-between text-xs text-muted mt-1">
-                    <span>{fmt(goal.currentAmount)}</span>
-                    <span>{fmt(goal.targetAmount)}</span>
+                  <div className="font-sans mt-1" style={{ fontSize: 11, color: 'rgba(255,255,255,.28)' }}>
+                    {fmt(goal.currentAmount)} из {fmt(goal.targetAmount)}
                   </div>
-                </Card>
+                </div>
               )
             })}
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Recent transactions */}
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="font-display font-bold">Операции</h2>
-          <button onClick={() => navigate('/transactions')} className="text-xs text-muted">Все →</button>
-        </div>
-        {recentTxs.length === 0 ? (
-          <Card className="text-center py-6 text-muted">
-            <div className="text-3xl mb-2">📭</div>
-            <div className="text-sm">Нет операций за период</div>
-          </Card>
-        ) : (
-          <Card className="divide-y divide-border p-0 overflow-hidden">
-            {recentTxs.map((tx) => (
+        {/* Recent transactions */}
+        <div
+          className="rounded-3xl mb-[14px] border"
+          style={{ padding: '18px 18px 14px', background: '#161B27', borderColor: 'rgba(255,255,255,.06)' }}
+        >
+          <div className="flex items-center justify-between mb-[14px]">
+            <span className="font-black text-text" style={{ fontSize: 15 }}>Операции</span>
+            <button
+              onClick={() => navigate('/transactions')}
+              className="font-bold font-sans"
+              style={{ fontSize: 12, color: 'rgba(255,255,255,.3)', background: 'none', border: 'none' }}
+            >
+              Все →
+            </button>
+          </div>
+
+          {recentTxs.length === 0 ? (
+            <div
+              className="text-center font-sans py-2.5"
+              style={{ fontSize: 13, color: 'rgba(255,255,255,.25)' }}
+            >
+              📭 Нет операций за период
+            </div>
+          ) : (
+            recentTxs.map((tx, i) => (
               <button
                 key={tx.id}
                 onClick={() => navigate(`/transactions/${tx.id}`)}
-                className="flex items-center justify-between w-full px-4 py-3 text-left"
+                className="flex items-center justify-between w-full text-left"
+                style={{
+                  padding: '10px 0',
+                  borderTop: i > 0 ? '1px solid rgba(255,255,255,.05)' : 'none',
+                }}
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">{tx.categoryEmoji}</span>
-                  <div>
-                    <div className="font-bold text-sm">{tx.category}</div>
-                    {tx.comment && <div className="text-xs text-muted">{tx.comment}</div>}
+                <div className="flex items-center" style={{ gap: 11 }}>
+                  <div
+                    className="flex items-center justify-center flex-shrink-0"
+                    style={{ width: 38, height: 38, borderRadius: 12, background: 'rgba(255,255,255,.06)', fontSize: 17 }}
+                  >
+                    {tx.categoryEmoji}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-extrabold text-text" style={{ fontSize: 13 }}>{tx.category}</span>
+                    <span className="font-sans" style={{ fontSize: 11, color: 'rgba(255,255,255,.28)' }}>
+                      {fmtDateGroup(tx.date)}
+                    </span>
                   </div>
                 </div>
-                <span className={`font-bold text-sm ${tx.type === 'INCOME' ? 'text-green' : 'text-text'}`}>
-                  {tx.type === 'INCOME' ? '+' : '-'}{fmt(tx.amount)}
+                <span
+                  className="font-black"
+                  style={{ fontSize: 14, color: tx.type === 'INCOME' ? '#4ADE80' : '#F97316' }}
+                >
+                  {tx.type === 'INCOME' ? '+' : '−'}{fmt(tx.amount)}
                 </span>
               </button>
-            ))}
-          </Card>
-        )}
-      </div>
+            ))
+          )}
+        </div>
 
-      <div className="h-4" />
+      </div>
     </div>
   )
 }

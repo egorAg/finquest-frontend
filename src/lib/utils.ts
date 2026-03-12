@@ -32,3 +32,9 @@ export function currentMonth() {
 export function cn(...classes: (string | false | null | undefined)[]) {
   return classes.filter(Boolean).join(' ')
 }
+
+/** Название уровня по номеру */
+export function levelName(level: number): string {
+  const names = ['', 'Новичок', 'Копилка', 'Финансист', 'Аналитик', 'Инвестор', 'Мастер', 'Гуру', 'Легенда', 'Оракул', 'Архитектор']
+  return names[Math.min(level, names.length - 1)] || 'Мастер'
+}

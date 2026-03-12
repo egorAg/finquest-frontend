@@ -38,3 +38,15 @@ body {
 
 ::-webkit-scrollbar { display: none; }
 * { scrollbar-width: none; }
+
+@keyframes xp-shine {
+  0%   { left: -60%; }
+  100% { left: 120%; }
+}
+.xp-bar-shine {
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.3), transparent);
+  animation: xp-shine 2.5s ease infinite;
+}
