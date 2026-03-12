@@ -31,6 +31,11 @@ export function AddTransaction() {
   const [comment, setComment] = useState('')
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10))
   const [spaceId, setSpaceId] = useState(activeSpaceId ?? '')
+  const [isCustom, setIsCustom] = useState(false)
+  const [customName, setCustomName] = useState('')
+  const [customEmoji, setCustomEmoji] = useState('')
+
+  const EMOJI_OPTIONS = ['🏷️','🎮','🐾','✈️','💄','🔧','🎵','🏋️','🚗','🍕','📝','🎁','💳','🏦','📊','⭐']
 
   const { data: spaces = [] } = useQuery({ queryKey: ['spaces'], queryFn: getSpaces })
 
@@ -59,7 +64,7 @@ export function AddTransaction() {
           {(['EXPENSE', 'INCOME'] as const).map((t) => (
             <button
               key={t}
-              onClick={() => { setType(t); setCategory(''); setCategoryEmoji('') }}
+              onClick={() => { setType(t); setCategory(''); setCategoryEmoji(''); setIsCustom(false); setCustomName(''); setCustomEmoji('') }}
               className={`flex-1 py-2 rounded-xl font-bold text-sm transition-all ${
                 type === t
                   ? t === 'EXPENSE' ? 'bg-coral/20 text-coral' : 'bg-green/20 text-green'
@@ -91,9 +96,9 @@ export function AddTransaction() {
             {cats.map((c) => (
               <button
                 key={c.name}
-                onClick={() => { setCategory(c.name); setCategoryEmoji(c.emoji) }}
+                onClick={() => { setCategory(c.name); setCategoryEmoji(c.emoji); setIsCustom(false) }}
                 className={`flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${
-                  category === c.name
+                  category === c.name && !isCustom
                     ? 'border-green/50 bg-green/10'
                     : 'border-border bg-card2'
                 }`}
@@ -102,7 +107,50 @@ export function AddTransaction() {
                 <span className="text-xs text-center leading-tight">{c.name}</span>
               </button>
             ))}
+            <button
+              onClick={() => {
+                setIsCustom(true)
+                setCategory(customName)
+                setCategoryEmoji(customEmoji || '🏷️')
+                if (!customEmoji) setCustomEmoji('🏷️')
+              }}
+              className={`flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${
+                isCustom ? 'border-green/50 bg-green/10' : 'border-border bg-card2 border-dashed'
+              }`}
+            >
+              <span className="text-2xl">✏️</span>
+              <span className="text-xs text-center leading-tight">Своя</span>
+            </button>
           </div>
+
+          {/* Custom category form */}
+          {isCustom && (
+            <div className="mt-3 space-y-2">
+              <input
+                placeholder="Название категории"
+                value={customName}
+                onChange={(e) => { setCustomName(e.target.value); setCategory(e.target.value) }}
+                className="w-full bg-card2 rounded-xl border border-border px-3 py-2 text-sm outline-none"
+                autoFocus
+              />
+              <div>
+                <div className="text-xs text-muted mb-1">Иконка</div>
+                <div className="flex flex-wrap gap-1">
+                  {EMOJI_OPTIONS.map((e) => (
+                    <button
+                      key={e}
+                      onClick={() => { setCustomEmoji(e); setCategoryEmoji(e) }}
+                      className={`w-9 h-9 rounded-lg text-lg flex items-center justify-center transition-all ${
+                        customEmoji === e ? 'bg-green/20 border border-green/50' : 'bg-card2 border border-border'
+                      }`}
+                    >
+                      {e}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Space selector */}
