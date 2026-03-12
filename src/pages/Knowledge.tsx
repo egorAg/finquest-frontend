@@ -26,7 +26,7 @@ export function Knowledge() {
   return (
     <div>
       <PageHeader title="База знаний" />
-      <div className="px-4 space-y-4">
+      <div className="px-[18px] space-y-[14px]">
         {/* Category pills */}
         <div className="flex gap-2 overflow-x-auto pb-1">
           {CATEGORIES.map((c) => (

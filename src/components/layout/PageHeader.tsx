@@ -9,7 +9,7 @@ interface PageHeaderProps {
 export function PageHeader({ title, back = false, right }: PageHeaderProps) {
   const navigate = useNavigate()
   return (
-    <div className="flex items-center justify-between px-4 pt-4 pb-2">
+    <div className="flex items-center justify-between px-[18px] pt-4 pb-2">
       {back ? (
         <button
           onClick={() => navigate(-1)}

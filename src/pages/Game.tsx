@@ -25,21 +25,10 @@ export function Game() {
   return (
     <div>
       <PageHeader title="Игра" />
-      <div className="px-4 space-y-4">
-        {/* Level card */}
+      <div className="px-[18px] space-y-[14px]">
+        {/* XP card */}
         {user && (
-          <Card className="bg-gradient-to-br from-purple/20 to-blue/10 border-purple/20">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-14 h-14 rounded-2xl bg-purple/20 flex items-center justify-center text-2xl font-display font-black text-purple">
-                {user.level}
-              </div>
-              <div>
-                <div className="font-display font-bold text-lg">{user.firstName}</div>
-                <div className="text-sm text-muted">🔥 Серия {user.streakDays} дней</div>
-              </div>
-            </div>
-            <XpBar xp={user.xp} xpToNext={user.xpToNext} level={user.level} />
-          </Card>
+          <XpBar xp={user.xp} xpToNext={user.xpToNext} level={user.level} streakDays={user.streakDays} />
         )}
 
         {/* Active challenges */}

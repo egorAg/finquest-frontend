@@ -19,7 +19,7 @@ export function Finances() {
   return (
     <div>
       <PageHeader title="Финансы" />
-      <div className="px-4 space-y-4">
+      <div className="px-[18px] space-y-[14px]">
         {/* Month picker */}
         <div className="flex items-center justify-between">
           <button

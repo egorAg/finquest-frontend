@@ -14,7 +14,7 @@ export function Profile() {
       <PageHeader title="Профиль" right={
         <button onClick={() => navigate('/settings')} className="text-xl">⚙️</button>
       } />
-      <div className="px-4 space-y-4">
+      <div className="px-[18px] space-y-[14px]">
         <Card className="text-center py-6">
           <div className="text-5xl mb-2">{user.avatarEmoji}</div>
           <div className="font-display font-bold text-xl">{user.firstName} {user.lastName}</div>
@@ -22,13 +22,7 @@ export function Profile() {
           <div className="mt-3 text-sm text-muted">🔥 Серия {user.streakDays} дней</div>
         </Card>
 
-        <Card>
-          <div className="flex justify-between mb-3">
-            <span className="font-bold">Уровень {user.level}</span>
-            <span className="text-muted text-sm">{user.totalXpEarned} XP всего</span>
-          </div>
-          <XpBar xp={user.xp} xpToNext={user.xpToNext} level={user.level} />
-        </Card>
+        <XpBar xp={user.xp} xpToNext={user.xpToNext} level={user.level} streakDays={user.streakDays} />
 
         <div className="grid grid-cols-2 gap-3">
           <Card className="text-center cursor-pointer" onClick={() => navigate('/achievements')}>

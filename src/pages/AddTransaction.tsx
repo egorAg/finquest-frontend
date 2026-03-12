@@ -52,7 +52,7 @@ export function AddTransaction() {
   return (
     <div>
       <PageHeader title="Новая операция" back />
-      <div className="px-4 space-y-4">
+      <div className="px-[18px] space-y-[14px]">
 
         {/* Type toggle */}
         <div className="flex bg-card2 rounded-2xl p-1 gap-1">
