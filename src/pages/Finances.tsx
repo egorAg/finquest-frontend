@@ -4,12 +4,14 @@ import { useAppStore } from '../store'
 import { getAnalyticsSummary } from '../api'
 import { Card } from '../components/ui/Card'
 import { PageHeader } from '../components/layout/PageHeader'
-import { fmt, currentMonth } from '../lib/utils'
+import { currentMonth } from '../lib/utils'
+import { useFmt } from '../hooks/useFmt'
 
 type DayData = { date: string; income: number; expense: number }
 
 function DayChart({ days }: { days: DayData[] }) {
   const [selected, setSelected] = useState<number | null>(null)
+  const fmt = useFmt()
   if (!days || days.length === 0) return null
 
   const maxVal = Math.max(...days.flatMap((d) => [d.income, d.expense]), 1)
@@ -101,6 +103,7 @@ function DayChart({ days }: { days: DayData[] }) {
 export function Finances() {
   const { activeSpaceId } = useAppStore()
   const [month, setMonth] = useState(currentMonth())
+  const fmt = useFmt()
 
   const { data } = useQuery({
     queryKey: ['analytics', activeSpaceId, month],

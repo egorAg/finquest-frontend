@@ -68,8 +68,8 @@ export const updateGoal = (id: string, data: { currentAmount?: number; name?: st
 export const getChallenges = () =>
   apiClient.get<Challenge[]>('/challenges').then((r) => r.data)
 
-export const updateChallengeProgress = (id: string, currentValue: number) =>
-  apiClient.post<{ challenge: Challenge; xpEarned?: number; user?: User }>(`/challenges/${id}/progress`, { currentValue }).then((r) => r.data)
+export const joinChallenge = (id: string) =>
+  apiClient.post<{ id: string }>(`/challenges/${id}/join`).then((r) => r.data)
 
 // ─── Achievements ─────────────────────────────────────────────────────────────
 

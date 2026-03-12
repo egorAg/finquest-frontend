@@ -74,12 +74,18 @@ export interface Challenge {
   description: string
   emoji: string
   xpReward: number
-  type: 'SPENDING_LIMIT' | 'STREAK' | 'SAVINGS' | 'CATEGORY'
+  type: 'SPENDING_LIMIT' | 'MIN_SPENDING' | 'CATEGORY_AVOID' | 'STREAK' | 'GOAL_COMPLETE'
   targetValue: number
   currentValue: number
+  categoryKey: string | null
+  periodType: string | null
+  periodDays: number | null
   deadline: string
+  joined: boolean
   isCompleted: boolean
+  isFailed: boolean
   completedAt: string | null
+  joinedAt: string | null
   spaceId: string | null
   createdAt: string
 }

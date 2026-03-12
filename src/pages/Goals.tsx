@@ -5,11 +5,12 @@ import { getGoals, updateGoal, createGoal } from '../api'
 import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
 import { PageHeader } from '../components/layout/PageHeader'
-import { fmt } from '../lib/utils'
+import { useFmt } from '../hooks/useFmt'
 
 export function Goals() {
   const qc = useQueryClient()
   const { activeSpaceId } = useAppStore()
+  const fmt = useFmt()
   const [tab, setTab] = useState<'active' | 'archived'>('active')
   const [showAdd, setShowAdd] = useState(false)
   const [contribute, setContribute] = useState<{ id: string; name: string } | null>(null)

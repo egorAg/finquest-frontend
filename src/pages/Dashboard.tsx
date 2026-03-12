@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../store'
 import { getTransactions, getGoals, getSpaces } from '../api'
 import { XpBar } from '../components/ui/XpBar'
-import { fmt, currentMonth, fmtDateGroup } from '../lib/utils'
+import { currentMonth, fmtDateGroup } from '../lib/utils'
+import { useFmt } from '../hooks/useFmt'
 
 type Period = 'month' | 'year'
 
@@ -13,6 +14,7 @@ export function Dashboard() {
   const navigate = useNavigate()
   const { user, activeSpaceId, setActiveSpaceId, spaces, setSpaces } = useAppStore()
   const [period, setPeriod] = useState<Period>('month')
+  const fmt = useFmt()
 
   const month = currentMonth()
   const year = new Date().getFullYear().toString()

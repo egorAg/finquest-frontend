@@ -5,7 +5,8 @@ import { useAppStore } from '../store'
 import { getTransactions, deleteTransaction } from '../api'
 import { Card } from '../components/ui/Card'
 import { PageHeader } from '../components/layout/PageHeader'
-import { fmt, fmtDateGroup, fmtDateTime, currentMonth } from '../lib/utils'
+import { fmtDateGroup, fmtDateTime, currentMonth } from '../lib/utils'
+import { useFmt } from '../hooks/useFmt'
 import type { Transaction } from '../types'
 
 type Filter = 'ALL' | 'EXPENSE' | 'INCOME'
@@ -15,6 +16,7 @@ type Filter = 'ALL' | 'EXPENSE' | 'INCOME'
 export function Transactions() {
   const navigate = useNavigate()
   const { activeSpaceId } = useAppStore()
+  const fmt = useFmt()
   const [filter, setFilter] = useState<Filter>('ALL')
   const [month, setMonth] = useState(currentMonth())
 
@@ -143,6 +145,7 @@ export function TransactionDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const qc = useQueryClient()
+  const fmt = useFmt()
   const { activeSpaceId } = useAppStore()
   const [showConfirm, setShowConfirm] = useState(false)
 

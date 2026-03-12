@@ -1,3 +1,9 @@
+const CURRENCY_SYMBOLS: Record<string, string> = { RUB: '₽', USD: '$', EUR: '€' }
+
+export function getCurrencySymbol(code?: string): string {
+  return CURRENCY_SYMBOLS[code ?? 'RUB'] ?? '₽'
+}
+
 /** Форматировать сумму: 1234567 → "1 234 567 ₽" */
 export function fmt(amount: number, currency = '₽') {
   return new Intl.NumberFormat('ru-RU').format(Math.round(amount)) + ' ' + currency
