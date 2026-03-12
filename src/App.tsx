@@ -31,6 +31,11 @@ import { Onboarding } from './pages/Onboarding'
 const qc = new QueryClient({
   defaultOptions: {
     queries: { retry: 1, staleTime: 30_000 },
+    mutations: {
+      onSuccess: () => {
+        qc.invalidateQueries()
+      },
+    },
   },
 })
 
