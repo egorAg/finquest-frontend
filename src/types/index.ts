@@ -150,6 +150,14 @@ export interface RecurringTransaction {
   createdAt: string
 }
 
+export interface Announcement {
+  id: string
+  text: string
+  emoji: string
+  isActive: boolean
+  createdAt: string
+}
+
 export interface KnowledgeArticle {
   id: string
   title: string

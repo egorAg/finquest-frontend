@@ -3,6 +3,7 @@ import type {
   User, Space, Transaction, Goal, Challenge,
   Achievement, Notification, LeaderboardEntry,
   AnalyticsSummary, KnowledgeArticle, RecurringTransaction,
+  Announcement,
 } from '../types'
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
@@ -140,3 +141,8 @@ export const getKnowledgeArticles = (category?: string) =>
 
 export const getKnowledgeArticle = (id: string) =>
   apiClient.get<KnowledgeArticle>(`/knowledge/${id}`).then((r) => r.data)
+
+// ─── Announcements ──────────────────────────────────────────────────────────
+
+export const getActiveAnnouncement = () =>
+  apiClient.get<Announcement | null>('/announcements/active').then((r) => r.data)
